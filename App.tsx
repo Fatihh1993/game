@@ -1,11 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { StyleSheet, View, Text, Button, Alert } from 'react-native';
+import { StyleSheet, View, Text, Button } from 'react-native';
 import { GameEngine } from 'react-native-game-engine';
-import { Snippet } from './components/Snippet';
-import { hackSystem } from './systems/hack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Snippet } from './components/Snippet';
+import { LanguageSelector } from './components/LanguageSelector';
+import { hackSystem } from './systems/hack';
 
 export default function App() {
+  const [selectedLanguage, setSelectedLanguage] = useState<string | null>(null);
   const [score, setScore] = useState(0);
   const [lives, setLives] = useState(3);
   const [level, setLevel] = useState(1);
@@ -13,14 +15,12 @@ export default function App() {
   const [gameOver, setGameOver] = useState(false);
   const gameEngineRef = useRef<any>(null);
 
-  // 🏆 Best score yükle
   useEffect(() => {
     AsyncStorage.getItem('bestScore').then(value => {
       if (value) setBestScore(parseInt(value));
     });
   }, []);
 
-  // 🆙 Level artışı (her 10 puanda 1 seviye)
   useEffect(() => {
     const newLevel = Math.floor(score / 10) + 1;
     setLevel(newLevel);
@@ -56,24 +56,22 @@ export default function App() {
     setLives(3);
     setLevel(1);
     setGameOver(false);
+    setSelectedLanguage(null); // Ana menüye dön
   };
 
-  const entities = {
-    snippet1: {
-      position: [100, 0],
-      code: 'Console.WriteLine("Merhaba Dünya!");',
-      isCorrect: true,
-      renderer: Snippet,
-      onAnswer: (answer: boolean) => handleAnswer(answer, 'snippet1'),
-    },
-  };
+  if (!selectedLanguage) {
+    return <LanguageSelector onSelect={setSelectedLanguage} />;
+  }
+
+  // entities başlangıçta boş olacak, hackSystem ilk snippet'ı ekleyecek
+  const entities = {};
 
   return (
     <View style={styles.container}>
       <GameEngine
         ref={gameEngineRef}
         style={styles.gameContainer}
-        systems={[hackSystem(handleAnswer)]}
+        systems={[hackSystem(handleAnswer, selectedLanguage)]}
         entities={gameOver ? {} : entities}
         running={!gameOver}
       >
