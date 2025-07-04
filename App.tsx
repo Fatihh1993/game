@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect } from 'react';
 import { StyleSheet, View, Text, Button } from 'react-native';
 import { GameEngine } from 'react-native-game-engine';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Snippet } from './components/Snippet';
 import { LanguageSelector } from './components/LanguageSelector';
 import { hackSystem } from './systems/hack';
 
@@ -26,7 +25,8 @@ export default function App() {
     setLevel(newLevel);
   }, [score]);
 
-  const handleAnswer = async (isCorrect: boolean, id: string) => {
+  const handleAnswer = async (isCorrect: boolean | null, id: string) => {
+    if (isCorrect === null) return;
     const isRight = isCorrect === true;
     setScore(prev => prev + (isRight ? 1 : 0));
 
@@ -56,14 +56,13 @@ export default function App() {
     setLives(3);
     setLevel(1);
     setGameOver(false);
-    setSelectedLanguage(null); // Ana menüye dön
+    setSelectedLanguage(null);
   };
 
   if (!selectedLanguage) {
     return <LanguageSelector onSelect={setSelectedLanguage} />;
   }
 
-  // entities başlangıçta boş olacak, hackSystem ilk snippet'ı ekleyecek
   const entities = {};
 
   return (

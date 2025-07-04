@@ -1,9 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 
-export const Snippet = ({ position, code, onAnswer, explanation, isCorrect }: any) => {
+export const Snippet = ({
+  position,
+  code,
+  onAnswer,
+  explanation,
+  isCorrect,
+  onToggleExplanation,
+}: any) => {
   const [showExplanation, setShowExplanation] = useState(false);
   const [selectedAnswer, setSelectedAnswer] = useState<null | boolean>(null);
+
+  useEffect(() => {
+    if (onToggleExplanation) {
+      onToggleExplanation(showExplanation);
+    }
+  }, [showExplanation]);
 
   const handlePress = (answer: boolean) => {
     setSelectedAnswer(answer);
@@ -37,10 +50,8 @@ export const Snippet = ({ position, code, onAnswer, explanation, isCorrect }: an
       </View>
       {showExplanation && (
         <View style={styles.explanationBox}>
-          <Text style={styles.explanationTitle}>
-            Neden {isCorrect ? "Doğru" : "Yanlış"}?
-          </Text>
-          <Text style={styles.explanationText}>{explanation || "Açıklama yok."}</Text>
+          <Text style={styles.explanationTitle}>Neden {isCorrect ? 'Doğru' : 'Yanlış'}?</Text>
+          <Text style={styles.explanationText}>{explanation || 'Açıklama yok.'}</Text>
           <TouchableOpacity style={styles.continueButton} onPress={handleContinue}>
             <Text style={styles.continueButtonText}>Devam Et</Text>
           </TouchableOpacity>
@@ -81,7 +92,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#2ecc40',
   },
   wrongButton: {
-    backgroundColor: '#ff4136', 
+    backgroundColor: '#ff4136',
   },
   buttonText: {
     color: 'white',
