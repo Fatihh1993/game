@@ -10,6 +10,7 @@
     "test": "jest"
   },
   "dependencies": {
+    "@expo/vector-icons": "^14.1.0",
     "@react-native-async-storage/async-storage": "^2.2.0",
     "@react-native-firebase/app": "^22.4.0",
     "@react-native-firebase/firestore": "^22.4.0",
@@ -24,6 +25,7 @@
     "react-native-sound": "^0.11.2",
     "react-native-sprite-sheet": "^0.0.3",
     "react-native-syntax-highlighter": "^2.1.0",
+    "react-native-vector-icons": "^10.2.0",
     "react-syntax-highlighter": "^15.6.1"
   },
   "devDependencies": {
@@ -37,6 +39,7 @@
     "@react-native/eslint-config": "0.80.1",
     "@react-native/metro-config": "0.80.1",
     "@react-native/typescript-config": "0.80.1",
+    "@types/expo__vector-icons": "^9.0.1",
     "@types/jest": "^29.5.14",
     "@types/matter-js": "^0.19.8",
     "@types/react": "^19.1.0",

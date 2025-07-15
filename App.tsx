@@ -1,9 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { StyleSheet, View, Text, Button, ActivityIndicator } from 'react-native';
+import { StyleSheet, View, Text, Button, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { GameEngine } from 'react-native-game-engine';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LanguageSelector } from './components/LanguageSelector';
 import { hackSystem } from './systems/hack';
+import { fetchSnippets } from './systems/fetchSnippets';
+import AuthScreen from './components/AuthScreen';
+import { auth } from './systems/auth';
+import { fetchLeaderboard, submitScore } from './systems/leaderboard';
 
 export default function App() {
   const [selectedLanguage, setSelectedLanguage] = useState<string | null>(null);
@@ -14,6 +18,14 @@ export default function App() {
   const [gameOver, setGameOver] = useState(false);
   const [unlockedLevel, setUnlockedLevel] = useState(1);
   const [correctInLevel, setCorrectInLevel] = useState(0);
+  const [snippets, setSnippets] = useState<any[]>([]);
+  const [loadingSnippets, setLoadingSnippets] = useState(false);
+  const [fetchError, setFetchError] = useState<string | null>(null);
+  const [user, setUser] = useState<any>(null);
+  const [showLeaderboard, setShowLeaderboard] = useState(false);
+  const [leaderboard, setLeaderboard] = useState<any[]>([]);
+  const [savingScore, setSavingScore] = useState(false);
+  const [lbError, setLbError] = useState<string | null>(null);
   const gameEngineRef = useRef<any>(null);
 
   useEffect(() => {
@@ -68,11 +80,58 @@ export default function App() {
   };
 
   // Yeni: Hem dil hem seviye seçimini LanguageSelector'dan al
-  const handleLanguageAndLevel = (lang: string, lvl: number) => {
+  const handleLanguageAndLevel = async (lang: string, lvl: number) => {
     setSelectedLanguage(lang);
     setLevel(lvl);
     setCorrectInLevel(0);
+    setLoadingSnippets(true);
+    setFetchError(null);
+    try {
+      const data = await fetchSnippets(lang, lvl);
+      setSnippets(data);
+    } catch (e) {
+      setFetchError('Sorular yüklenemedi.');
+      setSnippets([]);
+    } finally {
+      setLoadingSnippets(false);
+    }
   };
+
+  // Seviye değişince snippet'ları tekrar çek
+  useEffect(() => {
+    if (selectedLanguage && level !== null) {
+      setLoadingSnippets(true);
+      setFetchError(null);
+      fetchSnippets(selectedLanguage, level)
+        .then(data => setSnippets(data))
+        .catch(() => {
+          setFetchError('Sorular yüklenemedi.');
+          setSnippets([]);
+        })
+        .finally(() => setLoadingSnippets(false));
+    }
+  }, [selectedLanguage, level]);
+
+  // Kullanıcıyı dinle (oturum açık mı?)
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged(u => setUser(u));
+    return unsubscribe;
+  }, []);
+
+  // Oyun bittiğinde skor kaydet ve leaderboard'ı getir
+  useEffect(() => {
+    if (gameOver && user) {
+      setSavingScore(true);
+      submitScore(user.displayName || user.email || 'Kullanıcı', score)
+        .then(() => fetchLeaderboard().then(setLeaderboard))
+        .catch(() => setLbError('Skor kaydedilemedi.'))
+        .finally(() => setSavingScore(false));
+    }
+  }, [gameOver, user]);
+
+  if (!user) {
+    return <AuthScreen onAuth={setUser} />;
+  }
 
   if (!selectedLanguage || level === null) {
     return (
@@ -83,10 +142,46 @@ export default function App() {
     );
   }
 
+  if (loadingSnippets) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#1e1e1e' }}>
+        <ActivityIndicator size="large" color="#61dafb" />
+        <Text style={{ color: 'white', marginTop: 20 }}>Sorular yükleniyor...</Text>
+      </View>
+    );
+  }
+
+  if (fetchError) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#1e1e1e' }}>
+        <Text style={{ color: 'red', marginBottom: 20 }}>{fetchError}</Text>
+        <Button title="Tekrar Dene" onPress={() => handleLanguageAndLevel(selectedLanguage!, level!)} />
+      </View>
+    );
+  }
+
   // Level kutusu UI
   const LevelBox = (
     <View style={styles.levelBox}>
       <Text style={styles.levelBoxText}>Seviye {level}</Text>
+    </View>
+  );
+
+  // Yeni: Skor, Can, Rekor kutuları
+  const InfoBar = (
+    <View style={styles.infoBar}>
+      <View style={styles.infoItem}>
+        <Text style={styles.infoLabel}>Skor</Text>
+        <Text style={styles.infoValue}>{score}</Text>
+      </View>
+      <View style={styles.infoItem}>
+        <Text style={styles.infoLabel}>Can</Text>
+        <Text style={styles.infoValue}>{lives}</Text>
+      </View>
+      <View style={styles.infoItem}>
+        <Text style={styles.infoLabel}>Rekor</Text>
+        <Text style={styles.infoValue}>{bestScore}</Text>
+      </View>
     </View>
   );
 
@@ -95,22 +190,53 @@ export default function App() {
   return (
     <View style={styles.container}>
       {LevelBox}
+      {InfoBar}
       <GameEngine
         ref={gameEngineRef}
         style={styles.gameContainer}
-        systems={[hackSystem(handleAnswer, selectedLanguage, level)]}
+        systems={[hackSystem(handleAnswer, snippets)]}
         entities={gameOver ? {} : entities}
         running={!gameOver}
       >
-        <Text style={styles.score}>Skor: {score}</Text>
-        <Text style={styles.lives}>Can: {lives}</Text>
-        <Text style={styles.best}>Rekor: {bestScore}</Text>
+        {/* Skor, Can, Rekor metinleri kaldırıldı, InfoBar yukarıda */}
       </GameEngine>
-      {gameOver && (
+      {gameOver && !showLeaderboard && (
         <View style={styles.overlay}>
           <Text style={styles.gameOverText}>GAME OVER</Text>
           <Text style={styles.finalScore}>Puan: {score}</Text>
-          <Button title="Tekrar Oyna" onPress={resetGame} />
+          <View style={{ flexDirection: 'row', gap: 12, marginBottom: 10 }}>
+            <TouchableOpacity style={styles.gameOverButton} onPress={() => setShowLeaderboard(true)} activeOpacity={0.7}>
+              <Text style={styles.gameOverButtonText}>Liderlik Tablosu</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.gameOverButton} onPress={resetGame} activeOpacity={0.7}>
+              <Text style={styles.gameOverButtonText}>Tekrar Oyna</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      )}
+      {showLeaderboard && (
+        <View style={styles.leaderboardModal}>
+          <Text style={styles.leaderboardTitle}>Liderlik Tablosu</Text>
+          <View style={{ width: '100%', flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 }}>
+            <Text style={[styles.leaderboardHeader, { flex: 1 }]}>Sıra</Text>
+            <Text style={[styles.leaderboardHeader, { flex: 3 }]}>Kullanıcı Adı</Text>
+            <Text style={[styles.leaderboardHeader, { flex: 1, textAlign: 'right' }]}>Puan</Text>
+          </View>
+          <View style={{ width: '100%' }}>
+            {leaderboard.length === 0 && (
+              <Text style={{ color: '#aaa', textAlign: 'center', marginVertical: 12 }}>Henüz skor yok.</Text>
+            )}
+            {leaderboard.map((item, idx) => (
+              <View key={item.id} style={[styles.leaderboardRow, { backgroundColor: idx === 0 ? '#1e293b' : 'transparent' }]}> 
+                <Text style={styles.leaderboardRank}>{idx + 1}.</Text>
+                <Text style={styles.leaderboardName}>{item.username}</Text>
+                <Text style={styles.leaderboardScore}>{item.score}</Text>
+              </View>
+            ))}
+          </View>
+          <TouchableOpacity style={styles.gameOverButton} onPress={() => setShowLeaderboard(false)} activeOpacity={0.7}>
+            <Text style={styles.gameOverButtonText}>Kapat</Text>
+          </TouchableOpacity>
         </View>
       )}
     </View>
@@ -120,29 +246,41 @@ export default function App() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#1e1e1e' },
   gameContainer: { flex: 1 },
-  score: { position: 'absolute', top: 30, left: 20, color: 'white', fontSize: 18 },
-  lives: { position: 'absolute', top: 30, left: 250, color: 'white', fontSize: 18 },
-  best: { position: 'absolute', top: 60, left: 20, color: '#999', fontSize: 14 },
   overlay: {
     position: 'absolute',
-    top: 200,
-    left: 50,
-    right: 50,
-    backgroundColor: '#000000cc',
-    padding: 30,
-    borderRadius: 10,
+    top: '30%',
+    left: 24,
+    right: 24,
+    backgroundColor: '#23272fee', // daha koyu ve opak
+    padding: 32,
+    borderRadius: 18,
     alignItems: 'center',
+    shadowColor: '#000',
+    shadowOpacity: 0.22,
+    shadowRadius: 16,
+    elevation: 12,
+    borderWidth: 2,
+    borderColor: '#3a3f4b', // belirgin kenarlık
   },
   gameOverText: {
-    fontSize: 32,
-    color: 'red',
-    marginBottom: 20,
+    fontSize: 34,
+    color: '#ff4d6d',
+    marginBottom: 18,
     fontWeight: 'bold',
+    letterSpacing: 1.2,
+    textShadowColor: '#000',
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 6,
   },
   finalScore: {
-    fontSize: 18,
-    color: 'white',
-    marginBottom: 20,
+    fontSize: 22,
+    color: '#fff',
+    marginBottom: 22,
+    fontWeight: 'bold',
+    letterSpacing: 0.5,
+    textShadowColor: '#000',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 2,
   },
   levelBox: {
     alignSelf: 'center',
@@ -160,6 +298,44 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
     letterSpacing: 1,
+  },
+  infoBar: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    backgroundColor: '#23272f',
+    borderRadius: 12,
+    marginHorizontal: 18,
+    marginTop: 10,
+    marginBottom: 8,
+    paddingVertical: 10,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+  },
+  infoItem: {
+    alignItems: 'center',
+    flex: 1,
+    paddingHorizontal: 8,
+  },
+  infoLabel: {
+    color: '#61dafb',
+    fontSize: 15,
+    fontWeight: 'bold',
+    marginBottom: 2,
+    letterSpacing: 0.5,
+    textShadowColor: '#000',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 2,
+  },
+  infoValue: {
+    color: '#fff',
+    fontSize: 22,
+    fontWeight: 'bold',
+    textShadowColor: '#000',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 2,
   },
   levelSelectContainer: {
     flex: 1,
@@ -185,5 +361,100 @@ const styles = StyleSheet.create({
   levelLocked: {
     backgroundColor: '#444',
     opacity: 0.5,
+  },
+  leaderboardModal: {
+    position: 'absolute',
+    top: '18%',
+    left: 24,
+    right: 24,
+    backgroundColor: '#23272f',
+    borderRadius: 16,
+    padding: 24,
+    elevation: 10,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOpacity: 0.25,
+    shadowRadius: 16,
+  },
+  leaderboardTitle: {
+    color: '#61dafb',
+    fontSize: 26,
+    fontWeight: 'bold',
+    marginBottom: 18,
+    letterSpacing: 1,
+  },
+  leaderboardHeader: {
+    color: '#61dafb',
+    fontWeight: 'bold',
+    fontSize: 16,
+    marginBottom: 2,
+    textAlign: 'left',
+  },
+  leaderboardRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    width: '100%',
+    marginBottom: 6,
+    paddingVertical: 6,
+    borderRadius: 6,
+    paddingHorizontal: 4,
+  },
+  leaderboardRank: {
+    color: '#fff',
+    fontSize: 16,
+    width: 28,
+    textAlign: 'right',
+    fontWeight: 'bold',
+  },
+  leaderboardName: {
+    color: '#fff',
+    fontSize: 16,
+    flex: 1,
+    marginLeft: 10,
+    fontWeight: 'bold',
+  },
+  leaderboardScore: {
+    color: '#61dafb',
+    fontSize: 16,
+    fontWeight: 'bold',
+    width: 40,
+    textAlign: 'right',
+  },
+  leaderboardButton: {
+    backgroundColor: '#007aff',
+    borderRadius: 8,
+    paddingVertical: 12,
+    paddingHorizontal: 28,
+    alignItems: 'center',
+    marginHorizontal: 8,
+    elevation: 2,
+    borderWidth: 1.5,
+    borderColor: '#005bb5',
+    shadowColor: '#000',
+    shadowOpacity: 0.12,
+    shadowRadius: 4,
+  },
+  gameOverButton: {
+    backgroundColor: '#007aff',
+    borderRadius: 8,
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    alignItems: 'center',
+    marginHorizontal: 8,
+    elevation: 2,
+    borderWidth: 1.5,
+    borderColor: '#005bb5',
+    shadowColor: '#000',
+    shadowOpacity: 0.12,
+    shadowRadius: 4,
+    minWidth: 120,
+  },
+  gameOverButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 16,
+    letterSpacing: 0.5,
+    textAlign: 'center',
   },
 });

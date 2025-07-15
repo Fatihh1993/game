@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Dimensions, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
 
 export const Snippet = ({
   position,
@@ -57,7 +57,7 @@ export const Snippet = ({
   const topPos = position[1] + snippetHeight > screenHeight - 20 ? screenHeight - snippetHeight - 20 : position[1];
 
   return (
-    <View style={[styles.snippetContainer, { top: topPos, left: position[0], maxHeight: screenHeight - 40 }]}>
+    <View style={[styles.snippetContainer, { top: topPos, left: position[0] }]}>
       <Text style={styles.code}>{code}</Text>
       <View style={styles.timerBarContainer}>
         <View style={[styles.timerBar, { width: `${(timeLeft / timeLimit) * 100}%` }]} />
@@ -80,15 +80,13 @@ export const Snippet = ({
         </TouchableOpacity>
       </View>
       {showExplanation && (
-        <ScrollView style={{ maxHeight: screenHeight / 2 }} contentContainerStyle={{ flexGrow: 1 }}>
-          <View style={styles.explanationBox}>
-            <Text style={styles.explanationTitle}>Neden {isCorrect ? 'Doğru' : 'Yanlış'}?</Text>
-            <Text style={styles.explanationText}>{explanation || 'Açıklama yok.'}</Text>
-            <TouchableOpacity style={styles.continueButton} onPress={handleContinue}>
-              <Text style={styles.continueButtonText}>Devam Et</Text>
-            </TouchableOpacity>
-          </View>
-        </ScrollView>
+        <View style={styles.explanationBox}>
+          <Text style={styles.explanationTitle}>Neden {isCorrect ? 'Doğru' : 'Yanlış'}?</Text>
+          <Text style={styles.explanationText}>{explanation || 'Açıklama yok.'}</Text>
+          <TouchableOpacity style={styles.continueButton} onPress={handleContinue}>
+            <Text style={styles.continueButtonText}>Devam Et</Text>
+          </TouchableOpacity>
+        </View>
       )}
     </View>
   );
