@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
+import { Picker } from '@react-native-picker/picker';
 import { registerWithUsername, loginWithUsername } from '../systems/auth';
 import { updateProfile } from 'firebase/auth';
+import { countries } from './countries';
 
 export default function AuthScreen({ onAuth }: { onAuth: (user: any) => void }) {
   const [username, setUsername] = useState('');
@@ -11,19 +13,21 @@ export default function AuthScreen({ onAuth }: { onAuth: (user: any) => void }) 
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [registerSuccess, setRegisterSuccess] = useState(false);
+  const [country, setCountry] = useState('TR');
 
   const handleSubmit = async () => {
     setLoading(true);
     setError('');
     try {
       if (isRegister) {
-        const userCredential = await registerWithUsername(username, email, password);
+        const userCredential = await registerWithUsername(username, email, password, country);
         await updateProfile(userCredential.user, { displayName: username });
         setRegisterSuccess(true);
         setIsRegister(false);
         setUsername('');
         setEmail('');
         setPassword('');
+        setCountry('TR');
         return;
       } else {
         const userCredential = await loginWithUsername(username, password);
@@ -53,15 +57,28 @@ export default function AuthScreen({ onAuth }: { onAuth: (user: any) => void }) 
           placeholderTextColor="#888"
         />
         {isRegister && (
-          <TextInput
-            style={styles.input}
-            placeholder="E-posta"
-            value={email}
-            onChangeText={setEmail}
-            autoCapitalize="none"
-            keyboardType="email-address"
-            placeholderTextColor="#888"
-          />
+          <>
+            <TextInput
+              style={styles.input}
+              placeholder="E-posta"
+              value={email}
+              onChangeText={setEmail}
+              autoCapitalize="none"
+              keyboardType="email-address"
+              placeholderTextColor="#888"
+            />
+            <View style={styles.pickerBox}>
+              <Picker
+                selectedValue={country}
+                style={styles.picker}
+                onValueChange={setCountry}
+              >
+                {countries.map((c) => (
+                  <Picker.Item key={c.code} label={`${c.flag} ${c.name}`} value={c.code} />
+                ))}
+              </Picker>
+            </View>
+          </>
         )}
         <TextInput
           style={styles.input}
@@ -162,4 +179,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVertical: 2,
   },
+  pickerBox: { width: 240, marginBottom: 14, backgroundColor: '#23272f', borderRadius: 8 },
+  picker: { color: '#fff', width: 240, height: 44 },
 });

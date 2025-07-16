@@ -17,7 +17,7 @@ export async function logout() {
 }
 
 // Kullanıcı adı ile kayıt: önce kullanıcı adı boş mu kontrol et, sonra kaydet
-export async function registerWithUsername(username: string, email: string, password: string) {
+export async function registerWithUsername(username: string, email: string, password: string, country: string) {
   // Kullanıcı adı benzersiz mi?
   const q = query(collection(db, 'usernames'), where('username', '==', username));
   const snapshot = await getDocs(q);
@@ -26,11 +26,12 @@ export async function registerWithUsername(username: string, email: string, pass
   }
   // Firebase Auth ile kayıt
   const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-  // Firestore'a kullanıcı adı ve email eşlemesini kaydet
+  // Firestore'a kullanıcı adı, email ve ülke eşlemesini kaydet
   await setDoc(doc(db, 'usernames', username), {
     username,
     email,
     uid: userCredential.user.uid,
+    country, // ülke kodu
   });
   return userCredential;
 }
