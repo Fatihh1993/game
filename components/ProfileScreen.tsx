@@ -5,13 +5,11 @@ import { fetchUserProgress } from '../systems/leaderboard';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
 import { countries } from './countries';
-import { badges } from './badges';
 
 export default function ProfileScreen({ onClose, visible }: { onClose: () => void, visible: boolean }) {
   const [progress, setProgress] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [country, setCountry] = useState<string | null>(null);
-  const [userBadges, setUserBadges] = useState<string[]>([]);
   const user = auth.currentUser;
 
   useEffect(() => {
@@ -20,7 +18,6 @@ export default function ProfileScreen({ onClose, visible }: { onClose: () => voi
       getDoc(doc(db, 'usernames', user.displayName)).then(snap => {
         if (snap.exists()) {
           setCountry(snap.data().country || null);
-          setUserBadges(snap.data().badges || []);
         }
       });
     }
@@ -86,29 +83,19 @@ export default function ProfileScreen({ onClose, visible }: { onClose: () => voi
             </View>
           )}
 
-          <Text style={styles.section}>Rozetler</Text>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.badgeScroll}>
-            {userBadges.length > 0 ? badges.filter(b => userBadges.includes(b.id)).map(badge => (
-              <View key={badge.id} style={styles.badgeCard}>
-                <Text style={styles.badgeEmoji}>{badge.emoji}</Text>
-                <Text style={styles.badgeName}>{badge.name}</Text>
-              </View>
-            )) : (
-              <Text style={styles.info}>Henüz rozetiniz yok.</Text>
-            )}
-          </ScrollView>
-
           <Text style={styles.section}>Diller & Seviyeler</Text>
           <View style={styles.progressBox}>
-            {progress && Object.keys(progress).length > 0 ? (
-              Object.entries(progress).map(([lang, levels]: any) => (
+            {Object.entries(progress).length > 0 ? (
+              Object.entries(progress).map(([lang, level]) => (
                 <View key={lang} style={styles.langCard}>
                   <Text style={styles.langName}>{lang.toUpperCase()}</Text>
-                  <Text style={styles.levels}>Seviye: {levels.join(', ')}</Text>
+                  <Text style={styles.levels}>
+                    Seviye: {Array.isArray(level) ? level.join(', ') : String(level)}
+                  </Text>
                 </View>
               ))
             ) : (
-              <Text style={styles.info}>Henüz ilerleme yok.</Text>
+              <Text style={styles.levels}>Henüz ilerleme yok.</Text>
             )}
           </View>
           <TouchableOpacity style={styles.closeButtonBox} onPress={onClose} activeOpacity={0.8}>
@@ -184,32 +171,6 @@ const styles = StyleSheet.create({
     marginBottom: 4,
     alignSelf: 'flex-start',
   },
-  badgeScroll: {
-    minHeight: 44,
-    maxHeight: 60,
-    marginBottom: 4,
-  },
-  badgeCard: {
-    backgroundColor: '#222b36',
-    borderRadius: 8,
-    padding: 7,
-    marginRight: 7,
-    alignItems: 'center',
-    minWidth: 44,
-  },
-  badgeEmoji: {
-    fontSize: 22,
-  },
-  badgeName: {
-    fontSize: 11,
-    color: '#fff',
-    marginTop: 1,
-  },
-  info: {
-    color: '#bbb',
-    fontSize: 12,
-    marginVertical: 4,
-  },
   progressBox: {
     width: '100%',
     marginTop: 2,
@@ -247,5 +208,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 0,
     textAlign: 'center',
     width: '100%',
+  },
+  info: {
+    color: '#bbb',
+    fontSize: 15,
+    textAlign: 'center',
+    marginVertical: 8,
   },
 });

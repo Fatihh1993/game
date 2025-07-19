@@ -31,24 +31,45 @@ export async function fetchLeaderboard(language: string, topN: number = 10) {
 
 // Kullanıcının hangi dilde hangi seviyede oynadığını döndürür
 export async function fetchUserProgress(username: string) {
-  // progress koleksiyonu: progress/{username}/{lang}_{level}
-  const q = query(collection(db, 'progress'), where('username', '==', username));
-  const snapshot = await getDocs(q);
-  // { lang: [level, ...], ... }
-  const progress: Record<string, number[]> = {};
-  snapshot.forEach(doc => {
-    const { lang, level } = doc.data();
-    if (!progress[lang]) progress[lang] = [];
-    if (!progress[lang].includes(level)) progress[lang].push(level);
-  });
-  // Seviyeleri küçükten büyüğe sırala
-  Object.keys(progress).forEach(lang => progress[lang].sort((a, b) => a - b));
-  return progress;
+  const ref = doc(db, 'progress', username);
+  const snap = await getDoc(ref);
+  if (!snap.exists()) return {};
+  return snap.data(); // { csharp: 5, python: 2, ... }
 }
 
 // Oyun sonunda kullanıcının ilerlemesini kaydet
 export async function saveUserProgress(username: string, lang: string, level: number) {
-  // progress/{username}_{lang}_{level}
-  const ref = doc(db, 'progress', `${username}_${lang}_${level}`);
-  await setDoc(ref, { username, lang, level }, { merge: true });
+  const ref = doc(db, 'progress', username);
+  // Mevcut ilerlemeyi çek
+  const snap = await getDoc(ref);
+  let progress = {};
+  if (snap.exists()) {
+    progress = snap.data();
+  }
+  // O dildeki level'ı güncelle
+  await setDoc(ref, { ...progress, [lang]: level }, { merge: true });
 }
+
+// App.tsx veya ilgili yerde
+// Pass 'user' as a parameter to the function
+const handleLanguageSelect = async (lang: string, user: { displayName?: string; email?: string }) => {
+  setSelectedLanguage(lang);
+  const username = user.displayName ?? user.email;
+  if (!username) {
+    throw new Error('User must have a displayName or email');
+  }
+  const progress = await fetchUserProgress(username);
+  const userLevel = progress?.[lang] || 1;
+  setLevel(userLevel);
+};
+
+// Dummy implementation for setLevel to avoid error
+function setLevel(level: number) {
+  // Implement this function or import it from the relevant module
+  console.log('Set level to:', level);
+}
+
+function setSelectedLanguage(lang: string) {
+  throw new Error('Function not implemented.');
+}
+

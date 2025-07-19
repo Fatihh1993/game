@@ -7,14 +7,14 @@ import { hackSystem } from './systems/hack';
 import { fetchSnippets } from './systems/fetchSnippets';
 import AuthScreen from './components/AuthScreen';
 import { auth } from './systems/auth';
-import { fetchLeaderboard, submitScore, saveUserProgress } from './systems/leaderboard';
+import { fetchLeaderboard, submitScore, saveUserProgress, fetchUserProgress } from './systems/leaderboard';
 import ProfileScreen from './components/ProfileScreen';
 
 export default function App() {
   const [selectedLanguage, setSelectedLanguage] = useState<string | null>(null);
   const [score, setScore] = useState(0);
   const [lives, setLives] = useState(3);
-  const [level, setLevel] = useState<number | null>(null); // null: level seçilmedi
+  const [level, setLevel] = useState(1);
   const [bestScore, setBestScore] = useState(0);
   const [gameOver, setGameOver] = useState(false);
   const [unlockedLevel, setUnlockedLevel] = useState(1);
@@ -36,20 +36,40 @@ export default function App() {
     });
   }, []);
 
+  // Kullanıcıyı dinle (oturum açık mı?)
   useEffect(() => {
-    if (correctInLevel >= 5 && level && level < 5) {
-      setUnlockedLevel(level + 1);
-      setLevel(null); // tekrar level seçimine dön
-      setCorrectInLevel(0);
+    const unsubscribe = auth.onAuthStateChanged(u => setUser(u));
+    return unsubscribe;
+  }, []);
+
+  // Oyun bittiğinde skor kaydet ve leaderboard'ı getir
+  useEffect(() => {
+    if (gameOver && user && selectedLanguage) {
+      setSavingScore(true);
+      const username = user.displayName || user.email || 'Kullanıcı';
+      submitScore(username, score, selectedLanguage)
+        .then(() => fetchLeaderboard(selectedLanguage).then(setLeaderboard))
+        .catch(() => setLbError('Skor kaydedilemedi.'))
+        .finally(() => setSavingScore(false));
+      if (level) {
+        saveUserProgress(username, selectedLanguage, level);
+      }
     }
-  }, [correctInLevel, level]);
+  }, [gameOver, user, selectedLanguage, level]);
 
   const handleAnswer = async (isCorrect: boolean | null, id: string) => {
     if (isCorrect === null) return;
     const isRight = isCorrect === true;
     setScore(prev => prev + (isRight ? 1 : 0));
     if (isRight) {
-      setCorrectInLevel(prev => prev + 1);
+      setCorrectInLevel(prev => {
+        const newCorrect = prev + 1;
+        if (newCorrect >= 5) {
+          setLevel(lvl => lvl + 1);
+          return 0;
+        }
+        return newCorrect;
+      });
     }
     if (!isRight) {
       setLives(prev => {
@@ -71,25 +91,29 @@ export default function App() {
     }
   };
 
+  // Oyun sıfırlama
   const resetGame = () => {
     setScore(0);
     setLives(3);
-    setLevel(null);
     setUnlockedLevel(1);
     setCorrectInLevel(0);
     setGameOver(false);
     setSelectedLanguage(null);
+    setLevel(1); // Seçim ekranında tekrar doğru seviyeye çekilecek
   };
 
-  // Yeni: Hem dil hem seviye seçimini LanguageSelector'dan al
-  const handleLanguageAndLevel = async (lang: string, lvl: number) => {
+  // DİKKAT: Dil seçildiğinde kullanıcının o dildeki seviyesini çek ve başlat
+  const handleLanguageSelect = async (lang: string) => {
     setSelectedLanguage(lang);
-    setLevel(lvl);
-    setCorrectInLevel(0);
     setLoadingSnippets(true);
     setFetchError(null);
     try {
-      const data = await fetchSnippets(lang, lvl);
+      const username = user.displayName || user.email;
+      const progress = await fetchUserProgress(username);
+      const userLevel = progress?.[lang] || 1;
+      setLevel(userLevel);
+      setCorrectInLevel(0);
+      const data = await fetchSnippets(lang, userLevel);
       setSnippets(data);
     } catch (e) {
       setFetchError('Sorular yüklenemedi.');
@@ -101,7 +125,7 @@ export default function App() {
 
   // Seviye değişince snippet'ları tekrar çek
   useEffect(() => {
-    if (selectedLanguage && level !== null) {
+    if (selectedLanguage && level) {
       setLoadingSnippets(true);
       setFetchError(null);
       fetchSnippets(selectedLanguage, level)
@@ -113,29 +137,6 @@ export default function App() {
         .finally(() => setLoadingSnippets(false));
     }
   }, [selectedLanguage, level]);
-
-  // Kullanıcıyı dinle (oturum açık mı?)
-  useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged(u => setUser(u));
-    return unsubscribe;
-  }, []);
-
-  // Oyun bittiğinde skor kaydet ve leaderboard'ı getir
-  useEffect(() => {
-    if (gameOver && user && selectedLanguage) {
-      setSavingScore(true);
-      const username = user.displayName || user.email || 'Kullanıcı';
-      // DİKKAT: submitScore ve fetchLeaderboard fonksiyonlarına seçili dili gönderiyoruz!
-      submitScore(username, score, selectedLanguage)
-        .then(() => fetchLeaderboard(selectedLanguage).then(setLeaderboard))
-        .catch(() => setLbError('Skor kaydedilemedi.'))
-        .finally(() => setSavingScore(false));
-      // Profil için ilerleme kaydet
-      if (level) {
-        saveUserProgress(username, selectedLanguage, level);
-      }
-    }
-  }, [gameOver, user, selectedLanguage, level]);
 
   // Profilim butonu her ekranda aktif
   const ProfileButton = (
@@ -150,17 +151,15 @@ export default function App() {
     return <AuthScreen onAuth={setUser} />;
   }
 
-  if (!selectedLanguage || level === null) {
+  if (!selectedLanguage) {
     return (
       <View style={{ flex: 1, backgroundColor: '#1e1e1e' }}>
         {ProfileButton}
-        <LanguageSelector
-          onSelect={handleLanguageAndLevel}
-          unlockedLevel={unlockedLevel}
-        />
+        {/* Sadece dil seçtir, level yok */}
+        <LanguageSelector onSelect={handleLanguageSelect} />
         {showProfile && (
           <View style={[styles.leaderboardModal, { zIndex: 40 }]}> {/* Modal gibi üstte */}
-            <ProfileScreen onClose={() => setShowProfile(false)} />
+            <ProfileScreen visible={showProfile} onClose={() => setShowProfile(false)} />
             <TouchableOpacity style={styles.gameOverButton} onPress={() => setShowProfile(false)} activeOpacity={0.7}>
               <Text style={styles.gameOverButtonText}>Kapat</Text>
             </TouchableOpacity>
@@ -178,7 +177,7 @@ export default function App() {
         <Text style={{ color: 'white', marginTop: 20 }}>Sorular yükleniyor...</Text>
         {showProfile && (
           <View style={[styles.leaderboardModal, { zIndex: 40 }]}> {/* Modal gibi üstte */}
-            <ProfileScreen onClose={() => setShowProfile(false)} />
+            <ProfileScreen visible={showProfile} onClose={() => setShowProfile(false)} />
             <TouchableOpacity style={styles.gameOverButton} onPress={() => setShowProfile(false)} activeOpacity={0.7}>
               <Text style={styles.gameOverButtonText}>Kapat</Text>
             </TouchableOpacity>
@@ -193,10 +192,10 @@ export default function App() {
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#1e1e1e' }}>
         {ProfileButton}
         <Text style={{ color: 'red', marginBottom: 20 }}>{fetchError}</Text>
-        <Button title="Tekrar Dene" onPress={() => handleLanguageAndLevel(selectedLanguage!, level!)} />
+        <Button title="Tekrar Dene" onPress={() => handleLanguageSelect(selectedLanguage!)} />
         {showProfile && (
           <View style={[styles.leaderboardModal, { zIndex: 40 }]}> {/* Modal gibi üstte */}
-            <ProfileScreen onClose={() => setShowProfile(false)} />
+            <ProfileScreen visible={showProfile} onClose={() => setShowProfile(false)} />
             <TouchableOpacity style={styles.gameOverButton} onPress={() => setShowProfile(false)} activeOpacity={0.7}>
               <Text style={styles.gameOverButtonText}>Kapat</Text>
             </TouchableOpacity>
@@ -227,6 +226,10 @@ export default function App() {
       <View style={styles.infoItem}>
         <Text style={styles.infoLabel}>Rekor</Text>
         <Text style={styles.infoValue}>{bestScore}</Text>
+      </View>
+      <View style={styles.infoItem}>
+        <Text style={styles.infoLabel}>Seviye</Text>
+        <Text style={styles.infoValue}>{level}</Text>
       </View>
     </View>
   );
@@ -290,7 +293,7 @@ export default function App() {
       )}
       {showProfile && (
         <View style={[styles.leaderboardModal, { zIndex: 20 }]}> {/* Modal gibi üstte */}
-          <ProfileScreen onClose={() => setShowProfile(false)} />
+          <ProfileScreen visible={showProfile} onClose={() => setShowProfile(false)} />
           <TouchableOpacity style={styles.gameOverButton} onPress={() => setShowProfile(false)} activeOpacity={0.7}>
             <Text style={styles.gameOverButtonText}>Kapat</Text>
           </TouchableOpacity>

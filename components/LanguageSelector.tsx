@@ -1,70 +1,53 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 
-export const LanguageSelector = ({ onSelect, unlockedLevel = 1 }: { onSelect: (lang: string, level: number) => void, unlockedLevel?: number }) => {
+export const LanguageSelector = ({ onSelect }: { onSelect: (lang: string) => void }) => {
   const [language, setLanguage] = useState<string | null>(null);
-  const [level, setLevel] = useState<number | null>(null);
-  const [done, setDone] = useState(false);
+  const [showReady, setShowReady] = useState(false);
 
-  const handleReady = () => {
-    if (language && level) {
-      setDone(true);
-      onSelect(language, level);
+  const handleLanguage = (lang: string) => {
+    setLanguage(lang);
+    setShowReady(true);
+  };
+
+  const handleStart = () => {
+    if (language) {
+      onSelect(language);
     }
   };
 
-  if (done) return null;
+  if (showReady && language) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.title}>Hazır mısın?</Text>
+        <TouchableOpacity style={styles.readyButton} onPress={handleStart}>
+          <Text style={styles.buttonText}>Evet</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
-      {!language ? (
-        <>
-          <Text style={styles.title}>Bir dil seç</Text>
-          <View style={styles.buttonGrid}>
-            <View style={styles.buttonRow}>
-              <TouchableOpacity style={styles.button} onPress={() => setLanguage('csharp')}>
-                <Text style={styles.buttonText}>C#</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.button} onPress={() => setLanguage('sql')}>
-                <Text style={styles.buttonText}>SQL</Text>
-              </TouchableOpacity>
-            </View>
-            <View style={styles.buttonRow}>
-              <TouchableOpacity style={styles.button} onPress={() => setLanguage('javascript')}>
-                <Text style={styles.buttonText}>JavaScript</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.button} onPress={() => setLanguage('python')}>
-                <Text style={styles.buttonText}>Python</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </>
-      ) : !level ? (
-        <>
-          <Text style={styles.title}>Bir Seviye Seç</Text>
-          <View style={styles.buttonGrid}>
-            <View style={styles.buttonRow}>
-              {[1, 2, 3, 4, 5].map((lvl) => (
-                <TouchableOpacity
-                  key={lvl}
-                  style={[styles.button, lvl > unlockedLevel && styles.levelLocked]}
-                  onPress={() => lvl <= unlockedLevel && setLevel(lvl)}
-                  disabled={lvl > unlockedLevel}
-                >
-                  <Text style={styles.buttonText}>{`Seviye ${lvl}`}</Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-          </View>
-        </>
-      ) : (
-        <>
-          <Text style={styles.title}>Kodlar Geliyor, Hazır mısın?</Text>
-          <TouchableOpacity style={styles.readyButton} onPress={handleReady}>
-            <Text style={styles.buttonText}>EVET</Text>
+      <Text style={styles.title}>Bir dil seç</Text>
+      <View style={styles.buttonGrid}>
+        <View style={styles.buttonRow}>
+          <TouchableOpacity style={styles.button} onPress={() => handleLanguage('csharp')}>
+            <Text style={styles.buttonText}>C#</Text>
           </TouchableOpacity>
-        </>
-      )}
+          <TouchableOpacity style={styles.button} onPress={() => handleLanguage('sql')}>
+            <Text style={styles.buttonText}>SQL</Text>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.buttonRow}>
+          <TouchableOpacity style={styles.button} onPress={() => handleLanguage('javascript')}>
+            <Text style={styles.buttonText}>JavaScript</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={() => handleLanguage('python')}>
+            <Text style={styles.buttonText}>Python</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
     </View>
   );
 };
