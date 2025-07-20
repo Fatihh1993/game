@@ -11,11 +11,13 @@ export default function AuthScreen({
   uiLanguage,
   onLanguageChange,
   theme,
+  onThemeChange,
 }: {
   onAuth: (user: any) => void;
   uiLanguage: Lang;
   onLanguageChange: (lang: Lang) => void;
   theme: 'light' | 'dark';
+  onThemeChange: (t: 'light' | 'dark') => void;
 }) {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
@@ -25,6 +27,10 @@ export default function AuthScreen({
   const [loading, setLoading] = useState(false);
   const [registerSuccess, setRegisterSuccess] = useState(false);
   const [country, setCountry] = useState('TR');
+
+  const handleThemeToggle = () => {
+    onThemeChange(theme === 'light' ? 'dark' : 'light');
+  };
 
   const handleSubmit = async () => {
     setLoading(true);
@@ -66,6 +72,14 @@ export default function AuthScreen({
           onPress={() => onLanguageChange('en')}
         >
           <Text style={styles.langButtonText}>EN</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.langButton}
+          onPress={handleThemeToggle}
+        >
+          <Text style={styles.langButtonText}>
+            {theme === 'light' ? t(uiLanguage, 'dark') : t(uiLanguage, 'light')}
+          </Text>
         </TouchableOpacity>
       </View>
       <View style={styles.authBox}>
