@@ -8,7 +8,7 @@ import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
 import { countries } from './countries';
 
-export default function ProfileScreen({ onClose, visible, uiLanguage }: { onClose: () => void, visible: boolean, uiLanguage: Lang }) {
+export default function ProfileScreen({ onClose, visible, uiLanguage, onShowFriends }: { onClose: () => void, visible: boolean, uiLanguage: Lang, onShowFriends: () => void }) {
   const [progress, setProgress] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [country, setCountry] = useState<string | null>(null);
@@ -87,22 +87,25 @@ export default function ProfileScreen({ onClose, visible, uiLanguage }: { onClos
 
           <Text style={styles.section}>{t(uiLanguage, 'languagesLevels')}</Text>
           <View style={styles.progressBox}>
-            {Object.entries(progress).length > 0 ? (
-              Object.entries(progress).map(([lang, level]) => (
-                <View key={lang} style={styles.langCard}>
-                  <Text style={styles.langName}>{lang.toUpperCase()}</Text>
-                  <Text style={styles.levels}>
-                    {t(uiLanguage, 'countryLevel')}: {Array.isArray(level) ? level.join(', ') : String(level)}
-                  </Text>
-                </View>
-              ))
-            ) : (
-              <Text style={styles.levels}>{t(uiLanguage, 'noProgress')}</Text>
-            )}
-          </View>
-          <TouchableOpacity style={styles.closeButtonBox} onPress={onClose} activeOpacity={0.8}>
-            <Text style={styles.closeButtonText}>{t(uiLanguage, 'close')}</Text>
-          </TouchableOpacity>
+          {Object.entries(progress).length > 0 ? (
+            Object.entries(progress).map(([lang, level]) => (
+              <View key={lang} style={styles.langCard}>
+                <Text style={styles.langName}>{lang.toUpperCase()}</Text>
+                <Text style={styles.levels}>
+                  {t(uiLanguage, 'countryLevel')}: {Array.isArray(level) ? level.join(', ') : String(level)}
+                </Text>
+              </View>
+            ))
+          ) : (
+            <Text style={styles.levels}>{t(uiLanguage, 'noProgress')}</Text>
+          )}
+        </View>
+        <TouchableOpacity style={styles.friendButtonBox} onPress={onShowFriends} activeOpacity={0.8}>
+          <Text style={styles.closeButtonText}>{t(uiLanguage, 'friends')}</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.closeButtonBox} onPress={onClose} activeOpacity={0.8}>
+          <Text style={styles.closeButtonText}>{t(uiLanguage, 'close')}</Text>
+        </TouchableOpacity>
         </View>
       </View>
     </Modal>
@@ -194,6 +197,13 @@ const styles = StyleSheet.create({
   levels: {
     color: theme.colors.accent,
     fontSize: 12,
+  },
+  friendButtonBox: {
+    marginTop: 12,
+    width: '100%',
+    alignItems: 'center',
+    backgroundColor: theme.colors.primary,
+    borderRadius: 8,
   },
   closeButtonBox: {
     marginTop: 14,
