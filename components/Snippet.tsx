@@ -11,7 +11,7 @@ export const Snippet = ({
   onToggleExplanation,
   timeLimit = 5,
   uiLanguage,
-}: { position: number[]; code: string; onAnswer: Function; explanation: string; isCorrect: boolean; onToggleExplanation: (val: boolean) => void; timeLimit?: number; uiLanguage: Lang; }) => {
+}: { position: number[]; code: any; onAnswer: Function; explanation: any; isCorrect: boolean; onToggleExplanation: (val: boolean) => void; timeLimit?: number; uiLanguage: Lang; }) => {
   const [showExplanation, setShowExplanation] = useState(false);
   const [selectedAnswer, setSelectedAnswer] = useState<null | boolean>(null);
   const [timeLeft, setTimeLeft] = useState(timeLimit);
@@ -60,7 +60,9 @@ export const Snippet = ({
 
   return (
     <View style={[styles.snippetContainer, { top: topPos, left: position[0] }]}>
-      <Text style={styles.code}>{code}</Text>
+      <Text style={styles.code}>
+        {typeof code === 'object' ? code[uiLanguage] || code['en'] : code}
+      </Text>
       <View style={styles.timerBarContainer}>
         <View style={[styles.timerBar, { width: `${(timeLeft / timeLimit) * 100}%` }]} />
       </View>
@@ -83,8 +85,14 @@ export const Snippet = ({
       </View>
       {showExplanation && (
         <View style={styles.explanationBox}>
-          <Text style={styles.explanationTitle}>{isCorrect ? t(uiLanguage, 'whyCorrect') : t(uiLanguage, 'whyWrong')}</Text>
-          <Text style={styles.explanationText}>{explanation || t(uiLanguage, 'noExplanation')}</Text>
+          <Text style={styles.explanationTitle}>
+            {isCorrect ? 'Why Correct?' : 'Why Wrong?'}
+          </Text>
+          <Text style={styles.explanationText}>
+            {typeof explanation === 'object'
+              ? explanation[uiLanguage] || explanation['en']
+              : explanation}
+          </Text>
           <TouchableOpacity style={styles.continueButton} onPress={handleContinue}>
             <Text style={styles.continueButtonText}>{t(uiLanguage, 'continue')}</Text>
           </TouchableOpacity>

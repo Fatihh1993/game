@@ -22,7 +22,7 @@ export const hackSystem = (
         position: [Math.random() * maxLeft, 0],
         code: item.code,
         isCorrect: item.isCorrect,
-        explanation: item.explanation,
+        explanation: item.explanations, // <-- explanations!
         renderer: require('../components/Snippet').Snippet,
         uiLanguage,
         showingExplanation: false,
