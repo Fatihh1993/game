@@ -43,6 +43,12 @@ export const translations: Record<Lang, Record<string, string>> = {
     languagesLevels: 'Diller & Seviyeler',
     noProgress: 'Henüz ilerleme yok.',
     countryLevel: 'Seviye',
+    friends: 'Arkadaşlar',
+    searchFriend: 'Arkadaş ara',
+    search: 'Ara',
+    add: 'Ekle',
+    pendingRequests: 'Bekleyen İstekler',
+    accept: 'Kabul Et',
   },
   en: {
     loginTitle: 'Login',
@@ -86,6 +92,12 @@ export const translations: Record<Lang, Record<string, string>> = {
     languagesLevels: 'Languages & Levels',
     noProgress: 'No progress yet.',
     countryLevel: 'Level',
+    friends: 'Friends',
+    searchFriend: 'Search friend',
+    search: 'Search',
+    add: 'Add',
+    pendingRequests: 'Pending Requests',
+    accept: 'Accept',
   },
 };
 

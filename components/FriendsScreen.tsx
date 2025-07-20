@@ -1,0 +1,182 @@
+import React, { useState, useEffect } from 'react';
+import { Modal, View, Text, StyleSheet, TextInput, TouchableOpacity, ActivityIndicator, ScrollView } from 'react-native';
+import { theme } from '../theme';
+import { Lang, t } from '../translations';
+import { auth } from '../systems/auth';
+import { searchUsers, sendFriendRequest, fetchFriendRequests, acceptFriendRequest, fetchFriendsWithProgress } from '../systems/friends';
+
+export default function FriendsScreen({ visible, onClose, uiLanguage }: { visible: boolean; onClose: () => void; uiLanguage: Lang }) {
+  const user = auth.currentUser;
+  const [query, setQuery] = useState('');
+  const [results, setResults] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [requests, setRequests] = useState<any[]>([]);
+  const [friends, setFriends] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (visible && user?.displayName) {
+      fetchFriendRequests(user.displayName).then(setRequests);
+      fetchFriendsWithProgress(user.displayName).then(setFriends);
+    }
+  }, [visible, user]);
+
+  const handleSearch = async () => {
+    setLoading(true);
+    const res = await searchUsers(query);
+    setResults(res.filter(r => r.username !== user?.displayName));
+    setLoading(false);
+  };
+
+  const handleAdd = async (name: string) => {
+    if (!user?.displayName) return;
+    await sendFriendRequest(user.displayName, name);
+  };
+
+  const handleAccept = async (name: string) => {
+    if (!user?.displayName) return;
+    await acceptFriendRequest(name, user.displayName);
+    fetchFriendRequests(user.displayName).then(setRequests);
+    fetchFriendsWithProgress(user.displayName).then(setFriends);
+  };
+
+  return (
+    <Modal visible={visible} animationType="fade" transparent onRequestClose={onClose}>
+      <View style={styles.overlay}>
+        <View style={styles.card}>
+          <Text style={styles.title}>{t(uiLanguage, 'friends')}</Text>
+          <View style={styles.searchRow}>
+            <TextInput
+              style={styles.input}
+              value={query}
+              onChangeText={setQuery}
+              placeholder={t(uiLanguage, 'searchFriend')}
+              placeholderTextColor="#888"
+            />
+            <TouchableOpacity style={styles.searchButton} onPress={handleSearch} activeOpacity={0.7}>
+              <Text style={styles.buttonText}>{t(uiLanguage, 'search')}</Text>
+            </TouchableOpacity>
+          </View>
+          {loading && <ActivityIndicator color={theme.colors.accent} style={{ marginVertical: 8 }} />}
+          <ScrollView style={{ maxHeight: 100, width: '100%' }}>
+            {results.map(r => (
+              <View key={r.username} style={styles.row}>
+                <Text style={styles.name}>{r.username}</Text>
+                <TouchableOpacity style={styles.addButton} onPress={() => handleAdd(r.username)} activeOpacity={0.7}>
+                  <Text style={styles.buttonText}>{t(uiLanguage, 'add')}</Text>
+                </TouchableOpacity>
+              </View>
+            ))}
+          </ScrollView>
+          <Text style={styles.section}>{t(uiLanguage, 'pendingRequests')}</Text>
+          <ScrollView style={{ maxHeight: 80, width: '100%' }}>
+            {requests.map(r => (
+              <View key={r.from} style={styles.row}>
+                <Text style={styles.name}>{r.from}</Text>
+                <TouchableOpacity style={styles.addButton} onPress={() => handleAccept(r.from)} activeOpacity={0.7}>
+                  <Text style={styles.buttonText}>{t(uiLanguage, 'accept')}</Text>
+                </TouchableOpacity>
+              </View>
+            ))}
+          </ScrollView>
+          <Text style={styles.section}>{t(uiLanguage, 'friends')}</Text>
+          <ScrollView style={{ maxHeight: 120, width: '100%' }}>
+            {friends.map(f => (
+              <View key={f.username} style={styles.row}>
+                <Text style={styles.name}>{f.username}</Text>
+                <Text style={styles.levelText}>{Object.entries(f.progress).map(([lang, lvl]) => `${lang.toUpperCase()}: ${lvl}`).join(', ')}</Text>
+              </View>
+            ))}
+          </ScrollView>
+          <TouchableOpacity style={styles.closeButton} onPress={onClose} activeOpacity={0.8}>
+            <Text style={styles.buttonText}>{t(uiLanguage, 'close')}</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </Modal>
+  );
+}
+
+const styles = StyleSheet.create({
+  overlay: {
+    flex: 1,
+    backgroundColor: theme.colors.overlay,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  card: {
+    width: 320,
+    backgroundColor: theme.colors.card,
+    borderRadius: 18,
+    padding: 20,
+    alignItems: 'center',
+  },
+  title: {
+    color: theme.colors.accent,
+    fontSize: 22,
+    fontWeight: 'bold',
+    marginBottom: 8,
+  },
+  searchRow: {
+    flexDirection: 'row',
+    marginBottom: 8,
+  },
+  input: {
+    backgroundColor: theme.colors.card,
+    color: theme.colors.text,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+    paddingHorizontal: 8,
+    paddingVertical: 6,
+    flex: 1,
+    marginRight: 6,
+  },
+  searchButton: {
+    backgroundColor: theme.colors.primary,
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    justifyContent: 'center',
+  },
+  addButton: {
+    backgroundColor: theme.colors.primary,
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+  },
+  buttonText: {
+    color: theme.colors.text,
+    fontWeight: 'bold',
+  },
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 4,
+    width: '100%',
+  },
+  name: {
+    color: theme.colors.text,
+    fontSize: 15,
+    flex: 1,
+  },
+  levelText: {
+    color: theme.colors.accent,
+    fontSize: 12,
+    flex: 1,
+    textAlign: 'right',
+  },
+  section: {
+    alignSelf: 'flex-start',
+    marginTop: 10,
+    marginBottom: 4,
+    color: theme.colors.accent,
+    fontWeight: 'bold',
+  },
+  closeButton: {
+    marginTop: 12,
+    backgroundColor: theme.colors.primary,
+    borderRadius: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 20,
+  },
+});
