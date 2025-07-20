@@ -9,9 +9,11 @@ import AuthScreen from './components/AuthScreen';
 import { auth } from './systems/auth';
 import { fetchLeaderboard, submitScore, saveUserProgress, fetchUserProgress } from './systems/leaderboard';
 import ProfileScreen from './components/ProfileScreen';
+import { Lang, t } from './translations';
 
 export default function App() {
   const [selectedLanguage, setSelectedLanguage] = useState<string | null>(null);
+  const [uiLanguage, setUiLanguage] = useState<Lang>('tr');
   const [score, setScore] = useState(0);
   const [lives, setLives] = useState(3);
   const [level, setLevel] = useState(1);
@@ -46,10 +48,10 @@ export default function App() {
   useEffect(() => {
     if (gameOver && user && selectedLanguage) {
       setSavingScore(true);
-      const username = user.displayName || user.email || 'Kullanıcı';
+      const username = user.displayName || user.email || t(uiLanguage, 'usernameLabel');
       submitScore(username, score, selectedLanguage)
         .then(() => fetchLeaderboard(selectedLanguage).then(setLeaderboard))
-        .catch(() => setLbError('Skor kaydedilemedi.'))
+        .catch(() => setLbError(t(uiLanguage, 'genericError')))
         .finally(() => setSavingScore(false));
       if (level) {
         saveUserProgress(username, selectedLanguage, level);
@@ -116,7 +118,7 @@ export default function App() {
       const data = await fetchSnippets(lang, userLevel);
       setSnippets(data);
     } catch (e) {
-      setFetchError('Sorular yüklenemedi.');
+      setFetchError(t(uiLanguage, 'loadError'));
       setSnippets([]);
     } finally {
       setLoadingSnippets(false);
@@ -131,7 +133,7 @@ export default function App() {
       fetchSnippets(selectedLanguage, level)
         .then(data => setSnippets(data))
         .catch(() => {
-          setFetchError('Sorular yüklenemedi.');
+          setFetchError(t(uiLanguage, 'loadError'));
           setSnippets([]);
         })
         .finally(() => setLoadingSnippets(false));
@@ -142,13 +144,13 @@ export default function App() {
   const ProfileButton = (
     <View style={{ position: 'absolute', top: 40, right: 24, zIndex: 30 }}>
       <TouchableOpacity style={[styles.gameOverButton, { minWidth: 110, paddingVertical: 8, paddingHorizontal: 16 }]} onPress={() => setShowProfile(true)} activeOpacity={0.7}>
-        <Text style={styles.gameOverButtonText}>Profilim</Text>
+        <Text style={styles.gameOverButtonText}>{t(uiLanguage, 'myProfile')}</Text>
       </TouchableOpacity>
     </View>
   );
 
   if (!user) {
-    return <AuthScreen onAuth={setUser} />;
+    return <AuthScreen onAuth={setUser} uiLanguage={uiLanguage} onLanguageChange={setUiLanguage} />;
   }
 
   if (!selectedLanguage) {
@@ -156,12 +158,12 @@ export default function App() {
       <View style={{ flex: 1, backgroundColor: '#1e1e1e' }}>
         {ProfileButton}
         {/* Sadece dil seçtir, level yok */}
-        <LanguageSelector onSelect={handleLanguageSelect} />
+        <LanguageSelector onSelect={handleLanguageSelect} uiLanguage={uiLanguage} />
         {showProfile && (
           <View style={[styles.leaderboardModal, { zIndex: 40 }]}> {/* Modal gibi üstte */}
-            <ProfileScreen visible={showProfile} onClose={() => setShowProfile(false)} />
+            <ProfileScreen visible={showProfile} onClose={() => setShowProfile(false)} uiLanguage={uiLanguage} />
             <TouchableOpacity style={styles.gameOverButton} onPress={() => setShowProfile(false)} activeOpacity={0.7}>
-              <Text style={styles.gameOverButtonText}>Kapat</Text>
+              <Text style={styles.gameOverButtonText}>{t(uiLanguage, 'close')}</Text>
             </TouchableOpacity>
           </View>
         )}
@@ -174,12 +176,12 @@ export default function App() {
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#1e1e1e' }}>
         {ProfileButton}
         <ActivityIndicator size="large" color="#61dafb" />
-        <Text style={{ color: 'white', marginTop: 20 }}>Sorular yükleniyor...</Text>
+        <Text style={{ color: 'white', marginTop: 20 }}>{t(uiLanguage, 'loadingQuestions')}</Text>
         {showProfile && (
           <View style={[styles.leaderboardModal, { zIndex: 40 }]}> {/* Modal gibi üstte */}
-            <ProfileScreen visible={showProfile} onClose={() => setShowProfile(false)} />
+            <ProfileScreen visible={showProfile} onClose={() => setShowProfile(false)} uiLanguage={uiLanguage} />
             <TouchableOpacity style={styles.gameOverButton} onPress={() => setShowProfile(false)} activeOpacity={0.7}>
-              <Text style={styles.gameOverButtonText}>Kapat</Text>
+              <Text style={styles.gameOverButtonText}>{t(uiLanguage, 'close')}</Text>
             </TouchableOpacity>
           </View>
         )}
@@ -192,12 +194,12 @@ export default function App() {
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#1e1e1e' }}>
         {ProfileButton}
         <Text style={{ color: 'red', marginBottom: 20 }}>{fetchError}</Text>
-        <Button title="Tekrar Dene" onPress={() => handleLanguageSelect(selectedLanguage!)} />
+        <Button title={t(uiLanguage, 'tryAgain')} onPress={() => handleLanguageSelect(selectedLanguage!)} />
         {showProfile && (
           <View style={[styles.leaderboardModal, { zIndex: 40 }]}> {/* Modal gibi üstte */}
-            <ProfileScreen visible={showProfile} onClose={() => setShowProfile(false)} />
+            <ProfileScreen visible={showProfile} onClose={() => setShowProfile(false)} uiLanguage={uiLanguage} />
             <TouchableOpacity style={styles.gameOverButton} onPress={() => setShowProfile(false)} activeOpacity={0.7}>
-              <Text style={styles.gameOverButtonText}>Kapat</Text>
+              <Text style={styles.gameOverButtonText}>{t(uiLanguage, 'close')}</Text>
             </TouchableOpacity>
           </View>
         )}
@@ -208,7 +210,7 @@ export default function App() {
   // Level kutusu UI
   const LevelBox = (
     <View style={styles.levelBox}>
-      <Text style={styles.levelBoxText}>Seviye {level}</Text>
+      <Text style={styles.levelBoxText}>{t(uiLanguage, 'level')} {level}</Text>
     </View>
   );
 
@@ -216,19 +218,19 @@ export default function App() {
   const InfoBar = (
     <View style={styles.infoBar}>
       <View style={styles.infoItem}>
-        <Text style={styles.infoLabel}>Skor</Text>
+        <Text style={styles.infoLabel}>{t(uiLanguage, 'score')}</Text>
         <Text style={styles.infoValue}>{score}</Text>
       </View>
       <View style={styles.infoItem}>
-        <Text style={styles.infoLabel}>Can</Text>
+        <Text style={styles.infoLabel}>{t(uiLanguage, 'lives')}</Text>
         <Text style={styles.infoValue}>{lives}</Text>
       </View>
       <View style={styles.infoItem}>
-        <Text style={styles.infoLabel}>Rekor</Text>
+        <Text style={styles.infoLabel}>{t(uiLanguage, 'best')}</Text>
         <Text style={styles.infoValue}>{bestScore}</Text>
       </View>
       <View style={styles.infoItem}>
-        <Text style={styles.infoLabel}>Seviye</Text>
+        <Text style={styles.infoLabel}>{t(uiLanguage, 'level')}</Text>
         <Text style={styles.infoValue}>{level}</Text>
       </View>
     </View>
@@ -243,7 +245,7 @@ export default function App() {
       <GameEngine
         ref={gameEngineRef}
         style={styles.gameContainer}
-        systems={[hackSystem(handleAnswer, snippets)]}
+        systems={[hackSystem(handleAnswer, snippets, uiLanguage)]}
         entities={gameOver ? {} : entities}
         running={!gameOver}
       >
@@ -252,31 +254,31 @@ export default function App() {
       {gameOver && !showLeaderboard && (
         <View style={styles.overlay}>
           <Text style={styles.gameOverText}>GAME OVER</Text>
-          <Text style={styles.finalScore}>Puan: {score}</Text>
+          <Text style={styles.finalScore}>{t(uiLanguage, 'scoreLabel')}: {score}</Text>
           <View style={{ flexDirection: 'row', gap: 12, marginBottom: 10, flexWrap: 'wrap', justifyContent: 'center' }}>
             <TouchableOpacity style={[styles.gameOverButton, { flexShrink: 1, minWidth: 110 }]} onPress={() => setShowLeaderboard(true)} activeOpacity={0.7}>
-              <Text style={styles.gameOverButtonText}>Liderlik Tablosu</Text>
+          <Text style={styles.gameOverButtonText}>{t(uiLanguage, 'leaderboard')}</Text>
             </TouchableOpacity>
             <TouchableOpacity style={[styles.gameOverButton, { flexShrink: 1, minWidth: 110 }]} onPress={resetGame} activeOpacity={0.7}>
-              <Text style={styles.gameOverButtonText}>Tekrar Oyna</Text>
+          <Text style={styles.gameOverButtonText}>{t(uiLanguage, 'playAgain')}</Text>
             </TouchableOpacity>
             <TouchableOpacity style={[styles.gameOverButton, { flexShrink: 1, minWidth: 110 }]} onPress={() => setShowProfile(true)} activeOpacity={0.7}>
-              <Text style={styles.gameOverButtonText}>Profilim</Text>
+          <Text style={styles.gameOverButtonText}>{t(uiLanguage, 'myProfile')}</Text>
             </TouchableOpacity>
           </View>
         </View>
       )}
       {showLeaderboard && (
         <View style={styles.leaderboardModal}>
-          <Text style={styles.leaderboardTitle}>Liderlik Tablosu</Text>
+          <Text style={styles.leaderboardTitle}>{t(uiLanguage, 'leaderboard')}</Text>
           <View style={{ width: '100%', flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 }}>
-            <Text style={[styles.leaderboardHeader, { flex: 1 }]}>Sıra</Text>
-            <Text style={[styles.leaderboardHeader, { flex: 3 }]}>Kullanıcı Adı</Text>
-            <Text style={[styles.leaderboardHeader, { flex: 1, textAlign: 'right' }]}>Puan</Text>
+            <Text style={[styles.leaderboardHeader, { flex: 1 }]}>{t(uiLanguage, 'rank')}</Text>
+            <Text style={[styles.leaderboardHeader, { flex: 3 }]}>{t(uiLanguage, 'usernameLabel')}</Text>
+            <Text style={[styles.leaderboardHeader, { flex: 1, textAlign: 'right' }]}>{t(uiLanguage, 'scoreLabel')}</Text>
           </View>
           <View style={{ width: '100%' }}>
             {leaderboard.length === 0 && (
-              <Text style={{ color: '#aaa', textAlign: 'center', marginVertical: 12 }}>Henüz skor yok.</Text>
+              <Text style={{ color: '#aaa', textAlign: 'center', marginVertical: 12 }}>{t(uiLanguage, 'noScores')}</Text>
             )}
             {leaderboard.map((item, idx) => (
               <View key={item.id} style={[styles.leaderboardRow, { backgroundColor: idx === 0 ? '#1e293b' : 'transparent' }]}> 
@@ -287,15 +289,15 @@ export default function App() {
             ))}
           </View>
           <TouchableOpacity style={styles.gameOverButton} onPress={() => setShowLeaderboard(false)} activeOpacity={0.7}>
-            <Text style={styles.gameOverButtonText}>Kapat</Text>
+            <Text style={styles.gameOverButtonText}>{t(uiLanguage, 'close')}</Text>
           </TouchableOpacity>
         </View>
       )}
       {showProfile && (
         <View style={[styles.leaderboardModal, { zIndex: 20 }]}> {/* Modal gibi üstte */}
-          <ProfileScreen visible={showProfile} onClose={() => setShowProfile(false)} />
+          <ProfileScreen visible={showProfile} onClose={() => setShowProfile(false)} uiLanguage={uiLanguage} />
           <TouchableOpacity style={styles.gameOverButton} onPress={() => setShowProfile(false)} activeOpacity={0.7}>
-            <Text style={styles.gameOverButtonText}>Kapat</Text>
+            <Text style={styles.gameOverButtonText}>{t(uiLanguage, 'close')}</Text>
           </TouchableOpacity>
         </View>
       )}

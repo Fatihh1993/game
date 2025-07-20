@@ -4,8 +4,17 @@ import { Picker } from '@react-native-picker/picker';
 import { registerWithUsername, loginWithUsername } from '../systems/auth';
 import { updateProfile } from 'firebase/auth';
 import { countries } from './countries';
+import { Lang, t } from '../translations';
 
-export default function AuthScreen({ onAuth }: { onAuth: (user: any) => void }) {
+export default function AuthScreen({
+  onAuth,
+  uiLanguage,
+  onLanguageChange,
+}: {
+  onAuth: (user: any) => void;
+  uiLanguage: Lang;
+  onLanguageChange: (lang: Lang) => void;
+}) {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -35,7 +44,7 @@ export default function AuthScreen({ onAuth }: { onAuth: (user: any) => void }) 
         onAuth(userCredential.user);
       }
     } catch (e: any) {
-      setError(e.message || 'Bir hata oluştu');
+      setError(e.message || t(uiLanguage, 'genericError'));
     } finally {
       setLoading(false);
     }
@@ -43,14 +52,28 @@ export default function AuthScreen({ onAuth }: { onAuth: (user: any) => void }) 
 
   return (
     <View style={styles.authContainer}>
+      <View style={styles.langRow}>
+        <TouchableOpacity
+          style={[styles.langButton, uiLanguage === 'tr' && styles.langButtonActive]}
+          onPress={() => onLanguageChange('tr')}
+        >
+          <Text style={styles.langButtonText}>TR</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.langButton, uiLanguage === 'en' && styles.langButtonActive]}
+          onPress={() => onLanguageChange('en')}
+        >
+          <Text style={styles.langButtonText}>EN</Text>
+        </TouchableOpacity>
+      </View>
       <View style={styles.authBox}>
-        <Text style={styles.title}>{isRegister ? 'Kayıt Ol' : 'Giriş Yap'}</Text>
+        <Text style={styles.title}>{isRegister ? t(uiLanguage, 'registerTitle') : t(uiLanguage, 'loginTitle')}</Text>
         {registerSuccess && !isRegister && (
-          <Text style={styles.success}>Kayıt başarılı! Şimdi giriş yapabilirsiniz.</Text>
+          <Text style={styles.success}>{t(uiLanguage, 'registerSuccess')}</Text>
         )}
         <TextInput
           style={styles.input}
-          placeholder="Kullanıcı Adı"
+          placeholder={t(uiLanguage, 'username')}
           value={username}
           onChangeText={setUsername}
           autoCapitalize="none"
@@ -60,7 +83,7 @@ export default function AuthScreen({ onAuth }: { onAuth: (user: any) => void }) 
           <>
             <TextInput
               style={styles.input}
-              placeholder="E-posta"
+              placeholder={t(uiLanguage, 'email')}
               value={email}
               onChangeText={setEmail}
               autoCapitalize="none"
@@ -82,7 +105,7 @@ export default function AuthScreen({ onAuth }: { onAuth: (user: any) => void }) 
         )}
         <TextInput
           style={styles.input}
-          placeholder="Şifre"
+          placeholder={t(uiLanguage, 'password')}
           value={password}
           onChangeText={setPassword}
           secureTextEntry
@@ -96,7 +119,7 @@ export default function AuthScreen({ onAuth }: { onAuth: (user: any) => void }) 
             disabled={loading}
             activeOpacity={0.7}
           >
-            <Text style={styles.buttonText}>{isRegister ? 'Kayıt Ol' : 'Giriş Yap'}</Text>
+          <Text style={styles.buttonText}>{isRegister ? t(uiLanguage, 'registerButton') : t(uiLanguage, 'loginButton')}</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={[styles.authButton, { opacity: loading ? 0.6 : 1 }]}
@@ -104,7 +127,7 @@ export default function AuthScreen({ onAuth }: { onAuth: (user: any) => void }) 
             disabled={loading}
             activeOpacity={0.7}
           >
-            <Text style={styles.buttonText}>{isRegister ? 'Zaten hesabım var' : 'Hesabım yok, kayıt ol'}</Text>
+          <Text style={styles.buttonText}>{isRegister ? t(uiLanguage, 'toggleToLogin') : t(uiLanguage, 'toggleToRegister')}</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -119,6 +142,21 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  langRow: {
+    flexDirection: 'row',
+    marginBottom: 12,
+    gap: 10,
+  },
+  langButton: {
+    backgroundColor: '#23272f',
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 6,
+  },
+  langButtonActive: {
+    backgroundColor: '#007aff',
+  },
+  langButtonText: { color: '#fff', fontWeight: 'bold' },
   authBox: {
     backgroundColor: '#23272f',
     borderRadius: 16,

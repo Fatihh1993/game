@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
+import { Lang, t } from '../translations';
 
 export const Snippet = ({
   position,
@@ -8,8 +9,9 @@ export const Snippet = ({
   explanation,
   isCorrect,
   onToggleExplanation,
-  timeLimit = 5, // saniye cinsinden
-}: any) => {
+  timeLimit = 5,
+  uiLanguage,
+}: { position: number[]; code: string; onAnswer: Function; explanation: string; isCorrect: boolean; onToggleExplanation: (val: boolean) => void; timeLimit?: number; uiLanguage: Lang; }) => {
   const [showExplanation, setShowExplanation] = useState(false);
   const [selectedAnswer, setSelectedAnswer] = useState<null | boolean>(null);
   const [timeLeft, setTimeLeft] = useState(timeLimit);
@@ -62,29 +64,29 @@ export const Snippet = ({
       <View style={styles.timerBarContainer}>
         <View style={[styles.timerBar, { width: `${(timeLeft / timeLimit) * 100}%` }]} />
       </View>
-      <Text style={styles.timerText}>{timeLeft} sn</Text>
+      <Text style={styles.timerText}>{timeLeft} {t(uiLanguage, 'secondsAbbrev')}</Text>
       <View style={styles.buttonRow}>
         <TouchableOpacity
           style={[styles.buttonWrapper, styles.correctButton]}
           onPress={() => handlePress(true)}
           disabled={showExplanation || timeLeft <= 0}
         >
-          <Text style={styles.buttonText}>Doğru</Text>
+          <Text style={styles.buttonText}>{t(uiLanguage, 'correct')}</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.buttonWrapper, styles.wrongButton]}
           onPress={() => handlePress(false)}
           disabled={showExplanation || timeLeft <= 0}
         >
-          <Text style={styles.buttonText}>Yanlış</Text>
+          <Text style={styles.buttonText}>{t(uiLanguage, 'wrong')}</Text>
         </TouchableOpacity>
       </View>
       {showExplanation && (
         <View style={styles.explanationBox}>
-          <Text style={styles.explanationTitle}>Neden {isCorrect ? 'Doğru' : 'Yanlış'}?</Text>
-          <Text style={styles.explanationText}>{explanation || 'Açıklama yok.'}</Text>
+          <Text style={styles.explanationTitle}>{isCorrect ? t(uiLanguage, 'whyCorrect') : t(uiLanguage, 'whyWrong')}</Text>
+          <Text style={styles.explanationText}>{explanation || t(uiLanguage, 'noExplanation')}</Text>
           <TouchableOpacity style={styles.continueButton} onPress={handleContinue}>
-            <Text style={styles.continueButtonText}>Devam Et</Text>
+            <Text style={styles.continueButtonText}>{t(uiLanguage, 'continue')}</Text>
           </TouchableOpacity>
         </View>
       )}

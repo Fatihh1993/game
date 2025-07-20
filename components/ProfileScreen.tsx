@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { Modal, View, Text, StyleSheet, ActivityIndicator, ScrollView, TouchableOpacity } from 'react-native';
+import { Lang, t } from '../translations';
 import { auth } from '../systems/auth';
 import { fetchUserProgress } from '../systems/leaderboard';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
 import { countries } from './countries';
 
-export default function ProfileScreen({ onClose, visible }: { onClose: () => void, visible: boolean }) {
+export default function ProfileScreen({ onClose, visible, uiLanguage }: { onClose: () => void, visible: boolean, uiLanguage: Lang }) {
   const [progress, setProgress] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [country, setCountry] = useState<string | null>(null);
@@ -33,9 +34,9 @@ export default function ProfileScreen({ onClose, visible }: { onClose: () => voi
       >
         <View style={styles.overlay}>
           <View style={styles.card}>
-            <Text style={styles.info}>Giriş yapmalısınız.</Text>
+            <Text style={styles.info}>{t(uiLanguage, 'loginRequired')}</Text>
             <TouchableOpacity style={styles.closeButtonBox} onPress={onClose} activeOpacity={0.8}>
-              <Text style={styles.closeButtonText}>Kapat</Text>
+          <Text style={styles.closeButtonText}>{t(uiLanguage, 'close')}</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -71,7 +72,7 @@ export default function ProfileScreen({ onClose, visible }: { onClose: () => voi
     >
       <View style={styles.overlay}>
         <View style={styles.card}>
-          <Text style={styles.title}>Profil</Text>
+          <Text style={styles.title}>{t(uiLanguage, 'profile')}</Text>
           <View style={styles.userBox}>
             <Text style={styles.username}>{user.displayName}</Text>
             <Text style={styles.email}>{user.email}</Text>
@@ -83,23 +84,23 @@ export default function ProfileScreen({ onClose, visible }: { onClose: () => voi
             </View>
           )}
 
-          <Text style={styles.section}>Diller & Seviyeler</Text>
+          <Text style={styles.section}>{t(uiLanguage, 'languagesLevels')}</Text>
           <View style={styles.progressBox}>
             {Object.entries(progress).length > 0 ? (
               Object.entries(progress).map(([lang, level]) => (
                 <View key={lang} style={styles.langCard}>
                   <Text style={styles.langName}>{lang.toUpperCase()}</Text>
                   <Text style={styles.levels}>
-                    Seviye: {Array.isArray(level) ? level.join(', ') : String(level)}
+                    {t(uiLanguage, 'countryLevel')}: {Array.isArray(level) ? level.join(', ') : String(level)}
                   </Text>
                 </View>
               ))
             ) : (
-              <Text style={styles.levels}>Henüz ilerleme yok.</Text>
+              <Text style={styles.levels}>{t(uiLanguage, 'noProgress')}</Text>
             )}
           </View>
           <TouchableOpacity style={styles.closeButtonBox} onPress={onClose} activeOpacity={0.8}>
-            <Text style={styles.closeButtonText}>Kapat</Text>
+            <Text style={styles.closeButtonText}>{t(uiLanguage, 'close')}</Text>
           </TouchableOpacity>
         </View>
       </View>
