@@ -30,6 +30,7 @@ export default function App() {
   const [savingScore, setSavingScore] = useState(false);
   const [lbError, setLbError] = useState<string | null>(null);
   const [showProfile, setShowProfile] = useState(false);
+  const [theme, setTheme] = useState<'light' | 'dark'>('dark');
   const gameEngineRef = useRef<any>(null);
 
   useEffect(() => {
@@ -150,15 +151,27 @@ export default function App() {
   );
 
   if (!user) {
-    return <AuthScreen onAuth={setUser} uiLanguage={uiLanguage} onLanguageChange={setUiLanguage} />;
+    return (
+      <AuthScreen
+        onAuth={setUser}
+        uiLanguage={uiLanguage}
+        onLanguageChange={setUiLanguage}
+        theme={theme}
+      />
+    );
   }
 
   if (!selectedLanguage) {
     return (
-      <View style={{ flex: 1, backgroundColor: '#1e1e1e' }}>
+      <View style={{ flex: 1, backgroundColor: theme === 'light' ? '#fff' : '#1e1e1e' }}>
         {ProfileButton}
         {/* Sadece dil seçtir, level yok */}
-        <LanguageSelector onSelect={handleLanguageSelect} uiLanguage={uiLanguage} />
+        <LanguageSelector
+          onSelect={handleLanguageSelect}
+          uiLanguage={uiLanguage}
+          theme={theme}
+          onThemeChange={setTheme}
+        />
         {showProfile && (
           <View style={[styles.leaderboardModal, { zIndex: 40 }]}> {/* Modal gibi üstte */}
             <ProfileScreen visible={showProfile} onClose={() => setShowProfile(false)} uiLanguage={uiLanguage} />
@@ -173,7 +186,7 @@ export default function App() {
 
   if (loadingSnippets) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#1e1e1e' }}>
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: theme === 'light' ? '#fff' : '#1e1e1e' }}>
         {ProfileButton}
         <ActivityIndicator size="large" color="#61dafb" />
         <Text style={{ color: 'white', marginTop: 20 }}>{t(uiLanguage, 'loadingQuestions')}</Text>
@@ -191,7 +204,7 @@ export default function App() {
 
   if (fetchError) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#1e1e1e' }}>
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: theme === 'light' ? '#fff' : '#1e1e1e' }}>
         {ProfileButton}
         <Text style={{ color: 'red', marginBottom: 20 }}>{fetchError}</Text>
         <Button title={t(uiLanguage, 'tryAgain')} onPress={() => handleLanguageSelect(selectedLanguage!)} />
@@ -239,7 +252,7 @@ export default function App() {
   const entities = {};
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: theme === 'light' ? '#fff' : '#1e1e1e' }]}>
       {LevelBox}
       {InfoBar}
       <GameEngine

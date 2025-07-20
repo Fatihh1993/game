@@ -10,10 +10,12 @@ export default function AuthScreen({
   onAuth,
   uiLanguage,
   onLanguageChange,
+  theme,
 }: {
   onAuth: (user: any) => void;
   uiLanguage: Lang;
   onLanguageChange: (lang: Lang) => void;
+  theme: 'light' | 'dark';
 }) {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
@@ -51,7 +53,7 @@ export default function AuthScreen({
   };
 
   return (
-    <View style={styles.authContainer}>
+    <View style={[styles.authContainer, { backgroundColor: theme === 'light' ? '#fff' : '#1e1e1e' }]}>
       <View style={styles.langRow}>
         <TouchableOpacity
           style={[styles.langButton, uiLanguage === 'tr' && styles.langButtonActive]}
