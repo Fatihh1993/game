@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
+import { theme } from '../theme';
 import { Picker } from '@react-native-picker/picker';
 import { registerWithUsername, loginWithUsername } from '../systems/auth';
 import { updateProfile } from 'firebase/auth';
@@ -53,7 +54,7 @@ export default function AuthScreen({
   };
 
   return (
-    <View style={[styles.authContainer, { backgroundColor: '#1e1e1e' }]}>
+    <View style={[styles.authContainer, { backgroundColor: theme.colors.background }]}>
       <View style={styles.langRow}>
         <TouchableOpacity
           style={[styles.langButton, uiLanguage === 'tr' && styles.langButtonActive]}
@@ -140,7 +141,7 @@ export default function AuthScreen({
 const styles = StyleSheet.create({
   authContainer: {
     flex: 1,
-    backgroundColor: '#1e1e1e',
+    backgroundColor: theme.colors.background,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -150,17 +151,17 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   langButton: {
-    backgroundColor: '#23272f',
+    backgroundColor: theme.colors.card,
     paddingVertical: 6,
     paddingHorizontal: 12,
     borderRadius: 6,
   },
   langButtonActive: {
-    backgroundColor: '#007aff',
+    backgroundColor: theme.colors.primary,
   },
-  langButtonText: { color: '#fff', fontWeight: 'bold' },
+  langButtonText: { color: theme.colors.text, fontWeight: 'bold' },
   authBox: {
-    backgroundColor: '#23272f',
+    backgroundColor: theme.colors.card,
     borderRadius: 16,
     padding: 28,
     width: 320,
@@ -171,29 +172,29 @@ const styles = StyleSheet.create({
     elevation: 8,
   },
   title: {
-    color: '#61dafb',
+    color: theme.colors.accent,
     fontSize: 28,
     fontWeight: 'bold',
     marginBottom: 18,
     letterSpacing: 1,
   },
   input: {
-    backgroundColor: '#23272f', // daha koyu ve opak
-    color: '#fff',
+    backgroundColor: theme.colors.card,
+    color: theme.colors.text,
     borderRadius: 8,
     padding: 12,
     marginBottom: 14,
     width: 240,
     fontSize: 16,
     borderWidth: 1.5, // kenarlık eklendi
-    borderColor: '#3a3f4b', // koyu gri kenarlık
+    borderColor: theme.colors.border,
     shadowColor: '#000',
     shadowOpacity: 0.10,
     shadowRadius: 4,
     elevation: 2,
   },
-  error: { color: 'red', marginBottom: 10 },
-  success: { color: 'limegreen', marginBottom: 10, fontWeight: 'bold' },
+  error: { color: theme.colors.error, marginBottom: 10 },
+  success: { color: theme.colors.success, marginBottom: 10, fontWeight: 'bold' },
   buttonRow: {
     flexDirection: 'row',
     marginTop: 8,
@@ -202,7 +203,7 @@ const styles = StyleSheet.create({
     gap: 0,
   },
   authButton: {
-    backgroundColor: '#007aff',
+    backgroundColor: theme.colors.primary,
     borderRadius: 8,
     flex: 1,
     alignItems: 'center',
@@ -211,7 +212,7 @@ const styles = StyleSheet.create({
     height: 44,
   },
   buttonText: {
-    color: '#fff',
+    color: theme.colors.text,
     fontWeight: 'bold',
     fontSize: 16,
     textAlign: 'center',
@@ -219,6 +220,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVertical: 2,
   },
-  pickerBox: { width: 240, marginBottom: 14, backgroundColor: '#23272f', borderRadius: 8 },
-  picker: { color: '#fff', width: 240, height: 44 },
+  pickerBox: { width: 240, marginBottom: 14, backgroundColor: theme.colors.card, borderRadius: 8 },
+  picker: { color: theme.colors.text, width: 240, height: 44 },
 });

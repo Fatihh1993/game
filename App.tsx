@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { StyleSheet, View, Text, Button, ActivityIndicator, TouchableOpacity } from 'react-native';
+import { theme } from './theme';
 import { GameEngine } from 'react-native-game-engine';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LanguageSelector } from './components/LanguageSelector';
@@ -161,7 +162,7 @@ export default function App() {
 
   if (!selectedLanguage) {
     return (
-      <View style={{ flex: 1, backgroundColor: '#1e1e1e' }}>
+      <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
         {ProfileButton}
         {/* Sadece dil seçtir, level yok */}
         <LanguageSelector
@@ -182,9 +183,9 @@ export default function App() {
 
   if (loadingSnippets) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#1e1e1e' }}>
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: theme.colors.background }}>
         {ProfileButton}
-        <ActivityIndicator size="large" color="#61dafb" />
+        <ActivityIndicator size="large" color={theme.colors.accent} />
         <Text style={{ color: 'white', marginTop: 20 }}>{t(uiLanguage, 'loadingQuestions')}</Text>
         {showProfile && (
           <View style={[styles.leaderboardModal, { zIndex: 40 }]}> {/* Modal gibi üstte */}
@@ -200,7 +201,7 @@ export default function App() {
 
   if (fetchError) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#1e1e1e' }}>
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: theme.colors.background }}>
         {ProfileButton}
         <Text style={{ color: 'red', marginBottom: 20 }}>{fetchError}</Text>
         <Button title={t(uiLanguage, 'tryAgain')} onPress={() => handleLanguageSelect(selectedLanguage!)} />
@@ -248,7 +249,7 @@ export default function App() {
   const entities = {};
 
   return (
-    <View style={[styles.container, { backgroundColor: '#1e1e1e' }]}>
+    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
       {LevelBox}
       {InfoBar}
       <GameEngine
@@ -316,14 +317,14 @@ export default function App() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#1e1e1e' },
+  container: { flex: 1, backgroundColor: theme.colors.background },
   gameContainer: { flex: 1 },
   overlay: {
     position: 'absolute',
     top: '30%',
     left: 24,
     right: 24,
-    backgroundColor: '#23272fee', // daha koyu ve opak
+    backgroundColor: theme.colors.overlay,
     padding: 32,
     borderRadius: 18,
     alignItems: 'center',
@@ -332,11 +333,11 @@ const styles = StyleSheet.create({
     shadowRadius: 16,
     elevation: 12,
     borderWidth: 2,
-    borderColor: '#3a3f4b', // belirgin kenarlık
+    borderColor: theme.colors.border,
   },
   gameOverText: {
     fontSize: 34,
-    color: '#ff4d6d',
+    color: theme.colors.error,
     marginBottom: 18,
     fontWeight: 'bold',
     letterSpacing: 1.2,
@@ -346,7 +347,7 @@ const styles = StyleSheet.create({
   },
   finalScore: {
     fontSize: 22,
-    color: '#fff',
+    color: theme.colors.text,
     marginBottom: 22,
     fontWeight: 'bold',
     letterSpacing: 0.5,
@@ -356,7 +357,7 @@ const styles = StyleSheet.create({
   },
   levelBox: {
     alignSelf: 'center',
-    backgroundColor: '#222',
+    backgroundColor: theme.colors.card,
     paddingVertical: 10,
     paddingHorizontal: 40,
     borderRadius: 10,
@@ -365,7 +366,7 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   levelBoxText: {
-    color: '#61dafb',
+    color: theme.colors.accent,
     fontSize: 22,
     fontWeight: 'bold',
     textAlign: 'center',
@@ -375,7 +376,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
-    backgroundColor: '#23272f',
+    backgroundColor: theme.colors.card,
     borderRadius: 12,
     marginHorizontal: 18,
     marginTop: 10,
@@ -392,7 +393,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
   },
   infoLabel: {
-    color: '#61dafb',
+    color: theme.colors.accent,
     fontSize: 15,
     fontWeight: 'bold',
     marginBottom: 2,
@@ -402,7 +403,7 @@ const styles = StyleSheet.create({
     textShadowRadius: 2,
   },
   infoValue: {
-    color: '#fff',
+    color: theme.colors.text,
     fontSize: 22,
     fontWeight: 'bold',
     textShadowColor: '#000',
@@ -411,12 +412,12 @@ const styles = StyleSheet.create({
   },
   levelSelectContainer: {
     flex: 1,
-    backgroundColor: '#1e1e1e',
+    backgroundColor: theme.colors.background,
     justifyContent: 'center',
     alignItems: 'center',
   },
   levelSelectTitle: {
-    color: '#61dafb',
+    color: theme.colors.accent,
     fontSize: 26,
     fontWeight: 'bold',
     marginBottom: 30,
@@ -428,10 +429,10 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   levelActive: {
-    backgroundColor: '#222',
+    backgroundColor: theme.colors.card,
   },
   levelLocked: {
-    backgroundColor: '#444',
+    backgroundColor: theme.colors.border,
     opacity: 0.5,
   },
   leaderboardModal: {
@@ -439,7 +440,7 @@ const styles = StyleSheet.create({
     top: '18%',
     left: 24,
     right: 24,
-    backgroundColor: '#23272f',
+    backgroundColor: theme.colors.card,
     borderRadius: 16,
     padding: 24,
     elevation: 10,
@@ -449,14 +450,14 @@ const styles = StyleSheet.create({
     shadowRadius: 16,
   },
   leaderboardTitle: {
-    color: '#61dafb',
+    color: theme.colors.accent,
     fontSize: 26,
     fontWeight: 'bold',
     marginBottom: 18,
     letterSpacing: 1,
   },
   leaderboardHeader: {
-    color: '#61dafb',
+    color: theme.colors.accent,
     fontWeight: 'bold',
     fontSize: 16,
     marginBottom: 2,
@@ -473,28 +474,28 @@ const styles = StyleSheet.create({
     paddingHorizontal: 4,
   },
   leaderboardRank: {
-    color: '#fff',
+    color: theme.colors.text,
     fontSize: 16,
     width: 28,
     textAlign: 'right',
     fontWeight: 'bold',
   },
   leaderboardName: {
-    color: '#fff',
+    color: theme.colors.text,
     fontSize: 16,
     flex: 1,
     marginLeft: 10,
     fontWeight: 'bold',
   },
   leaderboardScore: {
-    color: '#61dafb',
+    color: theme.colors.accent,
     fontSize: 16,
     fontWeight: 'bold',
     width: 40,
     textAlign: 'right',
   },
   leaderboardButton: {
-    backgroundColor: '#007aff',
+    backgroundColor: theme.colors.primary,
     borderRadius: 8,
     paddingVertical: 12,
     paddingHorizontal: 28,
@@ -508,7 +509,7 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
   },
   gameOverButton: {
-    backgroundColor: '#007aff',
+    backgroundColor: theme.colors.primary,
     borderRadius: 8,
     paddingVertical: 12,
     paddingHorizontal: 24,
@@ -523,7 +524,7 @@ const styles = StyleSheet.create({
     minWidth: 120,
   },
   gameOverButtonText: {
-    color: '#fff',
+    color: theme.colors.text,
     fontWeight: 'bold',
     fontSize: 16,
     letterSpacing: 0.5,

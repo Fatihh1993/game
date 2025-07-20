@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { theme } from '../theme';
 import { Lang, t } from '../translations';
 
 export const LanguageSelector = ({
@@ -26,7 +27,7 @@ export const LanguageSelector = ({
 
   if (showReady && language) {
     return (
-      <View style={[styles.container, { backgroundColor: '#1e1e1e' }]}>
+      <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
         <Text style={styles.title}>{t(uiLanguage, 'ready')}</Text>
         <TouchableOpacity style={styles.readyButton} onPress={handleStart}>
           <Text style={styles.buttonText}>{t(uiLanguage, 'yes')}</Text>
@@ -36,7 +37,7 @@ export const LanguageSelector = ({
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: '#1e1e1e' }]}>
+    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
       <Text style={styles.title}>{t(uiLanguage, 'selectLanguage')}</Text>
       <View style={styles.buttonGrid}>
         <View style={styles.buttonRow}>
@@ -64,12 +65,12 @@ export const LanguageSelector = ({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1e1e1e',
+    backgroundColor: theme.colors.background,
     justifyContent: 'center',
     alignItems: 'center',
   },
   title: {
-    color: '#61dafb',
+    color: theme.colors.accent,
     fontSize: 24,
     marginBottom: 30,
     fontWeight: 'bold',
@@ -86,21 +87,21 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   button: {
-    backgroundColor: '#282c34',
+    backgroundColor: theme.colors.card,
     paddingVertical: 14,
     paddingHorizontal: 28,
     borderRadius: 8,
     marginHorizontal: 10,
   },
   readyButton: {
-    backgroundColor: '#007aff',
+    backgroundColor: theme.colors.primary,
     paddingVertical: 14,
     paddingHorizontal: 40,
     borderRadius: 8,
     marginTop: 20,
   },
   buttonText: {
-    color: 'white',
+    color: theme.colors.text,
     fontSize: 18,
     fontWeight: 'bold',
   },
