@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Modal, View, Text, StyleSheet, ActivityIndicator, ScrollView, TouchableOpacity } from 'react-native';
+import { theme } from '../theme';
 import { Lang, t } from '../translations';
 import { auth } from '../systems/auth';
 import { fetchUserProgress } from '../systems/leaderboard';
@@ -54,7 +55,7 @@ export default function ProfileScreen({ onClose, visible, uiLanguage }: { onClos
       >
         <View style={styles.overlay}>
           <View style={styles.card}>
-            <ActivityIndicator color="#61dafb" size="large" />
+            <ActivityIndicator color={theme.colors.accent} size="large" />
           </View>
         </View>
       </Modal>
@@ -111,13 +112,13 @@ export default function ProfileScreen({ onClose, visible, uiLanguage }: { onClos
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: 'rgba(10,20,30,0.85)',
+    backgroundColor: theme.colors.overlay,
     justifyContent: 'center',
     alignItems: 'center',
   },
   card: {
     width: 300,
-    backgroundColor: '#181d23',
+    backgroundColor: theme.colors.card,
     borderRadius: 18,
     padding: 20,
     alignItems: 'center',
@@ -129,7 +130,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 22,
     fontWeight: 'bold',
-    color: '#00bfff',
+    color: theme.colors.accent,
     marginBottom: 8,
     letterSpacing: 0.5,
   },
@@ -140,7 +141,7 @@ const styles = StyleSheet.create({
   username: {
     fontSize: 17,
     fontWeight: '600',
-    color: '#fff',
+    color: theme.colors.text,
   },
   email: {
     fontSize: 13,
@@ -150,7 +151,7 @@ const styles = StyleSheet.create({
   countryBox: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#222b36',
+    backgroundColor: theme.colors.card,
     borderRadius: 8,
     paddingHorizontal: 10,
     paddingVertical: 2,
@@ -162,11 +163,11 @@ const styles = StyleSheet.create({
   },
   country: {
     fontSize: 14,
-    color: '#fff',
+    color: theme.colors.text,
   },
   section: {
     fontSize: 15,
-    color: '#00bfff',
+    color: theme.colors.accent,
     fontWeight: 'bold',
     marginTop: 14,
     marginBottom: 4,
@@ -177,7 +178,7 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   langCard: {
-    backgroundColor: '#222b36',
+    backgroundColor: theme.colors.card,
     borderRadius: 7,
     padding: 6,
     marginBottom: 5,
@@ -186,23 +187,23 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   langName: {
-    color: '#fff',
+    color: theme.colors.text,
     fontWeight: 'bold',
     fontSize: 13,
   },
   levels: {
-    color: '#00bfff',
+    color: theme.colors.accent,
     fontSize: 12,
   },
   closeButtonBox: {
     marginTop: 14,
     width: '100%',
     alignItems: 'center',
-    backgroundColor: '#00bfff',
+    backgroundColor: theme.colors.primary,
     borderRadius: 8,
   },
   closeButtonText: {
-    color: '#fff',
+    color: theme.colors.text,
     fontWeight: 'bold',
     fontSize: 15,
     paddingVertical: 7,
