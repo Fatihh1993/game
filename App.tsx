@@ -157,6 +157,7 @@ export default function App() {
         uiLanguage={uiLanguage}
         onLanguageChange={setUiLanguage}
         theme={theme}
+        onThemeChange={setTheme}
       />
     );
   }
