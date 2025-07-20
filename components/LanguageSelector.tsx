@@ -5,13 +5,10 @@ import { Lang, t } from '../translations';
 export const LanguageSelector = ({
   onSelect,
   uiLanguage,
-  theme,
-  onThemeChange,
 }: {
   onSelect: (lang: string) => void;
   uiLanguage: Lang;
-  theme: 'light' | 'dark';
-  onThemeChange: (t: 'light' | 'dark') => void;
+
 }) => {
   const [language, setLanguage] = useState<string | null>(null);
   const [showReady, setShowReady] = useState(false);
@@ -29,7 +26,7 @@ export const LanguageSelector = ({
 
   if (showReady && language) {
     return (
-      <View style={[styles.container, { backgroundColor: theme === 'light' ? '#fff' : '#1e1e1e' }]}>
+      <View style={[styles.container, { backgroundColor: '#1e1e1e' }]}>
         <Text style={styles.title}>{t(uiLanguage, 'ready')}</Text>
         <TouchableOpacity style={styles.readyButton} onPress={handleStart}>
           <Text style={styles.buttonText}>{t(uiLanguage, 'yes')}</Text>
@@ -39,7 +36,7 @@ export const LanguageSelector = ({
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: theme === 'light' ? '#fff' : '#1e1e1e' }]}>
+    <View style={[styles.container, { backgroundColor: '#1e1e1e' }]}>
       <Text style={styles.title}>{t(uiLanguage, 'selectLanguage')}</Text>
       <View style={styles.buttonGrid}>
         <View style={styles.buttonRow}>
@@ -59,15 +56,7 @@ export const LanguageSelector = ({
           </TouchableOpacity>
         </View>
       </View>
-      <View style={[styles.buttonRow, { marginTop: 20 }]}> 
-        <Text style={[styles.title, { marginBottom: 10 }]}>{t(uiLanguage, 'selectTheme')}</Text>
-        <TouchableOpacity style={styles.button} onPress={() => onThemeChange('light')}>
-          <Text style={styles.buttonText}>{t(uiLanguage, 'light')}</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={() => onThemeChange('dark')}>
-          <Text style={styles.buttonText}>{t(uiLanguage, 'dark')}</Text>
-        </TouchableOpacity>
-      </View>
+      {/* Theme selection removed */}
     </View>
   );
 };

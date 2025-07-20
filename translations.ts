@@ -43,9 +43,6 @@ export const translations: Record<Lang, Record<string, string>> = {
     languagesLevels: 'Diller & Seviyeler',
     noProgress: 'Henüz ilerleme yok.',
     countryLevel: 'Seviye',
-    selectTheme: 'Tema Seç',
-    light: 'Açık',
-    dark: 'Koyu',
   },
   en: {
     loginTitle: 'Login',
@@ -89,9 +86,6 @@ export const translations: Record<Lang, Record<string, string>> = {
     languagesLevels: 'Languages & Levels',
     noProgress: 'No progress yet.',
     countryLevel: 'Level',
-    selectTheme: 'Select Theme',
-    light: 'Light',
-    dark: 'Dark',
   },
 };
 
