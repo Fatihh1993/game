@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { Lang, t } from '../translations';
 
-export const LanguageSelector = ({ onSelect }: { onSelect: (lang: string) => void }) => {
+export const LanguageSelector = ({ onSelect, uiLanguage }: { onSelect: (lang: string) => void; uiLanguage: Lang }) => {
   const [language, setLanguage] = useState<string | null>(null);
   const [showReady, setShowReady] = useState(false);
 
@@ -19,9 +20,9 @@ export const LanguageSelector = ({ onSelect }: { onSelect: (lang: string) => voi
   if (showReady && language) {
     return (
       <View style={styles.container}>
-        <Text style={styles.title}>Hazır mısın?</Text>
+        <Text style={styles.title}>{t(uiLanguage, 'ready')}</Text>
         <TouchableOpacity style={styles.readyButton} onPress={handleStart}>
-          <Text style={styles.buttonText}>Evet</Text>
+          <Text style={styles.buttonText}>{t(uiLanguage, 'yes')}</Text>
         </TouchableOpacity>
       </View>
     );
@@ -29,7 +30,7 @@ export const LanguageSelector = ({ onSelect }: { onSelect: (lang: string) => voi
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Bir dil seç</Text>
+      <Text style={styles.title}>{t(uiLanguage, 'selectLanguage')}</Text>
       <View style={styles.buttonGrid}>
         <View style={styles.buttonRow}>
           <TouchableOpacity style={styles.button} onPress={() => handleLanguage('csharp')}>

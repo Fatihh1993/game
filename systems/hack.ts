@@ -1,9 +1,11 @@
 import { Dimensions } from 'react-native';
+import { Lang } from '../translations';
 
 // Artık snippet listesini dışarıdan alıyoruz
 export const hackSystem = (
   handleAnswer: Function,
   snippets: any[],
+  uiLanguage: Lang,
 ) => {
   return (entities: any, { events }: any) => {
     const screenHeight = Dimensions.get('window').height;
@@ -22,6 +24,7 @@ export const hackSystem = (
         isCorrect: item.isCorrect,
         explanation: item.explanation,
         renderer: require('../components/Snippet').Snippet,
+        uiLanguage,
         showingExplanation: false,
       };
       entity.onAnswer = (answer: boolean | null) => handleAnswer(answer, newId);
