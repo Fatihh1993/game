@@ -10,7 +10,7 @@ import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
 import { countries } from './countries';
 
-export default function ProfileScreen({ onClose, visible, uiLanguage, onShowFriends, selectedLanguage }: { onClose: () => void; visible: boolean; uiLanguage: Lang; onShowFriends: () => void; selectedLanguage: string | null }) {
+export default function ProfileScreen({ onClose, visible, uiLanguage, onShowFriends, selectedLanguage, onShowLeaderboard }: { onClose: () => void; visible: boolean; uiLanguage: Lang; onShowFriends: () => void; selectedLanguage: string | null; onShowLeaderboard: () => void }) {
   const [progress, setProgress] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [country, setCountry] = useState<string | null>(null);
@@ -178,6 +178,9 @@ export default function ProfileScreen({ onClose, visible, uiLanguage, onShowFrie
         <TouchableOpacity style={styles.friendButtonBox} onPress={onShowFriends} activeOpacity={0.8}>
           <Text style={styles.closeButtonText}>{t(uiLanguage, 'friends')}</Text>
         </TouchableOpacity>
+        <TouchableOpacity style={styles.leaderboardButton} onPress={onShowLeaderboard} activeOpacity={0.8}>
+          <Text style={styles.closeButtonText}>{t(uiLanguage, 'leaderboard')}</Text>
+        </TouchableOpacity>
         <TouchableOpacity style={styles.closeButtonBox} onPress={async () => { await auth.signOut(); onClose(); }} activeOpacity={0.8}>
           <Text style={styles.closeButtonText}>{t(uiLanguage, 'logout')}</Text>
         </TouchableOpacity>
@@ -328,6 +331,21 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: theme.colors.primary,
     borderRadius: 8,
+  },
+  leaderboardButton: {
+    backgroundColor: theme.colors.primary,
+    borderRadius: 12,
+    paddingVertical: 14,
+    paddingHorizontal: 32,
+    alignItems: 'center',
+    marginTop: 12,
+    elevation: 3,
+    borderWidth: 1.5,
+    borderColor: '#005bb5',
+    shadowColor: '#000',
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
+    width: '100%',
   },
   closeButtonBox: {
     marginTop: 14,

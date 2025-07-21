@@ -220,7 +220,17 @@ export default function App() {
         />
         {showProfile && (
           <View style={[styles.leaderboardModal, { zIndex: 40 }]}> {/* Modal gibi üstte */}
-            <ProfileScreen visible={showProfile} onClose={() => setShowProfile(false)} uiLanguage={uiLanguage} onShowFriends={() => { setShowFriends(true); setShowProfile(false); }} selectedLanguage={selectedLanguage} />
+            <ProfileScreen
+              visible={showProfile}
+              onClose={() => setShowProfile(false)}
+              uiLanguage={uiLanguage}
+              onShowFriends={() => {
+                setShowFriends(true);
+                setShowProfile(false);
+              }}
+              selectedLanguage={selectedLanguage}
+              onShowLeaderboard={() => setShowLeaderboardLangSelect(true)}
+            />
             <TouchableOpacity style={styles.gameOverButton} onPress={() => setShowProfile(false)} activeOpacity={0.7}>
               <Text style={styles.gameOverButtonText}>{t(uiLanguage, 'close')}</Text>
             </TouchableOpacity>
@@ -250,6 +260,18 @@ export default function App() {
             </TouchableOpacity>
           </View>
         )}
+        {showLeaderboardLangSelect && (
+          <LeaderboardLanguageModal
+            visible={showLeaderboardLangSelect}
+            uiLanguage={uiLanguage}
+            onSelect={(lang) => {
+              setLeaderboardLanguage(lang);
+              setShowLeaderboard(true);
+              setShowLeaderboardLangSelect(false);
+            }}
+            onClose={() => setShowLeaderboardLangSelect(false)}
+          />
+        )}
         {Footer}
       </View>
     );
@@ -262,7 +284,17 @@ export default function App() {
         <Text style={{ color: 'white', marginTop: 20 }}>{t(uiLanguage, 'loadingQuestions')}</Text>
         {showProfile && (
           <View style={[styles.leaderboardModal, { zIndex: 40 }]}> {/* Modal gibi üstte */}
-            <ProfileScreen visible={showProfile} onClose={() => setShowProfile(false)} uiLanguage={uiLanguage} onShowFriends={() => { setShowFriends(true); setShowProfile(false); }} selectedLanguage={selectedLanguage} />
+            <ProfileScreen
+              visible={showProfile}
+              onClose={() => setShowProfile(false)}
+              uiLanguage={uiLanguage}
+              onShowFriends={() => {
+                setShowFriends(true);
+                setShowProfile(false);
+              }}
+              selectedLanguage={selectedLanguage}
+              onShowLeaderboard={() => setShowLeaderboardLangSelect(true)}
+            />
             <TouchableOpacity style={styles.gameOverButton} onPress={() => setShowProfile(false)} activeOpacity={0.7}>
               <Text style={styles.gameOverButtonText}>{t(uiLanguage, 'close')}</Text>
             </TouchableOpacity>
@@ -280,7 +312,17 @@ export default function App() {
         <Button title={t(uiLanguage, 'tryAgain')} onPress={() => handleLanguageSelect(selectedLanguage!)} />
         {showProfile && (
           <View style={[styles.leaderboardModal, { zIndex: 40 }]}> {/* Modal gibi üstte */}
-            <ProfileScreen visible={showProfile} onClose={() => setShowProfile(false)} uiLanguage={uiLanguage} onShowFriends={() => { setShowFriends(true); setShowProfile(false); }} selectedLanguage={selectedLanguage} />
+            <ProfileScreen
+              visible={showProfile}
+              onClose={() => setShowProfile(false)}
+              uiLanguage={uiLanguage}
+              onShowFriends={() => {
+                setShowFriends(true);
+                setShowProfile(false);
+              }}
+              selectedLanguage={selectedLanguage}
+              onShowLeaderboard={() => setShowLeaderboardLangSelect(true)}
+            />
             <TouchableOpacity style={styles.gameOverButton} onPress={() => setShowProfile(false)} activeOpacity={0.7}>
               <Text style={styles.gameOverButtonText}>{t(uiLanguage, 'close')}</Text>
             </TouchableOpacity>
@@ -387,7 +429,17 @@ export default function App() {
       )}
       {showProfile && (
         <View style={[styles.leaderboardModal, { zIndex: 20 }]}> {/* Modal gibi üstte */}
-          <ProfileScreen visible={showProfile} onClose={() => setShowProfile(false)} uiLanguage={uiLanguage} onShowFriends={() => { setShowFriends(true); setShowProfile(false); }} selectedLanguage={selectedLanguage} />
+          <ProfileScreen
+            visible={showProfile}
+            onClose={() => setShowProfile(false)}
+            uiLanguage={uiLanguage}
+            onShowFriends={() => {
+              setShowFriends(true);
+              setShowProfile(false);
+            }}
+            selectedLanguage={selectedLanguage}
+            onShowLeaderboard={() => setShowLeaderboardLangSelect(true)}
+          />
           <TouchableOpacity style={styles.gameOverButton} onPress={() => setShowProfile(false)} activeOpacity={0.7}>
             <Text style={styles.gameOverButtonText}>{t(uiLanguage, 'close')}</Text>
           </TouchableOpacity>
