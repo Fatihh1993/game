@@ -13,6 +13,7 @@ export default function FriendsScreen({ visible, onClose, uiLanguage }: { visibl
   const [requests, setRequests] = useState<any[]>([]);
   const [friends, setFriends] = useState<any[]>([]);
   const [info, setInfo] = useState<string | null>(null);
+  const [sentRequests, setSentRequests] = useState<string[]>([]);
 
   useEffect(() => {
     if (visible && user?.displayName) {
@@ -33,6 +34,7 @@ export default function FriendsScreen({ visible, onClose, uiLanguage }: { visibl
     if (!user?.displayName) return;
     await sendFriendRequest(user.displayName, name);
     setInfo(t(uiLanguage, 'requestSent'));
+    setSentRequests(prev => [...prev, name]);
     setTimeout(() => setInfo(null), 2000);
   };
 
@@ -66,8 +68,17 @@ export default function FriendsScreen({ visible, onClose, uiLanguage }: { visibl
             {results.map(r => (
               <View key={r.username} style={styles.row}>
                 <Text style={styles.name}>{r.username}</Text>
-                <TouchableOpacity style={styles.addButton} onPress={() => handleAdd(r.username)} activeOpacity={0.7}>
-                  <Text style={styles.buttonText}>{t(uiLanguage, 'add')}</Text>
+                <TouchableOpacity
+                  style={styles.addButton}
+                  onPress={() => handleAdd(r.username)}
+                  activeOpacity={0.7}
+                  disabled={sentRequests.includes(r.username)}
+                >
+                  <Text style={styles.buttonText}>
+                    {sentRequests.includes(r.username)
+                      ? t(uiLanguage, 'requestSent')
+                      : t(uiLanguage, 'add')}
+                  </Text>
                 </TouchableOpacity>
               </View>
             ))}
