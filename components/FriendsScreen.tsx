@@ -82,10 +82,12 @@ export default function FriendsScreen({ visible, onClose, uiLanguage }: { visibl
                   style={styles.addButton}
                   onPress={() => handleAdd(r.username)}
                   activeOpacity={0.7}
-                  disabled={sentRequests.includes(r.username)}
+                  disabled={sentRequests.includes(r.username) || friends.some(f => f.username === r.username)}
                 >
                   <Text style={styles.buttonText}>
-                    {sentRequests.includes(r.username)
+                    {friends.some(f => f.username === r.username)
+                      ? t(uiLanguage, 'friend')
+                      : sentRequests.includes(r.username)
                       ? t(uiLanguage, 'requestSent')
                       : t(uiLanguage, 'add')}
                   </Text>
