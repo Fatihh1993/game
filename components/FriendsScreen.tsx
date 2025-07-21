@@ -12,12 +12,14 @@ export default function FriendsScreen({ visible, onClose, uiLanguage }: { visibl
   const [loading, setLoading] = useState(false);
   const [requests, setRequests] = useState<any[]>([]);
   const [friends, setFriends] = useState<any[]>([]);
+  const [info, setInfo] = useState<string | null>(null);
 
   useEffect(() => {
     if (visible && user?.displayName) {
       fetchFriendRequests(user.displayName).then(setRequests);
       fetchFriendsWithProgress(user.displayName).then(setFriends);
     }
+    if (!visible) setInfo(null);
   }, [visible, user]);
 
   const handleSearch = async () => {
@@ -30,6 +32,8 @@ export default function FriendsScreen({ visible, onClose, uiLanguage }: { visibl
   const handleAdd = async (name: string) => {
     if (!user?.displayName) return;
     await sendFriendRequest(user.displayName, name);
+    setInfo(t(uiLanguage, 'requestSent'));
+    setTimeout(() => setInfo(null), 2000);
   };
 
   const handleAccept = async (name: string) => {
@@ -44,6 +48,7 @@ export default function FriendsScreen({ visible, onClose, uiLanguage }: { visibl
       <View style={styles.overlay}>
         <View style={styles.card}>
           <Text style={styles.title}>{t(uiLanguage, 'friends')}</Text>
+          {info && <Text style={styles.info}>{info}</Text>}
           <View style={styles.searchRow}>
             <TextInput
               style={styles.input}
@@ -178,5 +183,10 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     paddingVertical: 8,
     paddingHorizontal: 20,
+  },
+  info: {
+    color: theme.colors.success,
+    marginBottom: 6,
+    fontWeight: 'bold',
   },
 });

@@ -11,7 +11,9 @@ import { auth } from './systems/auth';
 import { fetchLeaderboard, submitScore, saveUserProgress, fetchUserProgress } from './systems/leaderboard';
 import ProfileScreen from './components/ProfileScreen';
 import FriendsScreen from './components/FriendsScreen';
+import NotificationBanner from './components/NotificationBanner';
 import { Lang, t } from './translations';
+import { subscribeFriendRequests } from './systems/friends';
 
 export default function App() {
   const [selectedLanguage, setSelectedLanguage] = useState<string | null>(null);
@@ -33,6 +35,8 @@ export default function App() {
   const [lbError, setLbError] = useState<string | null>(null);
   const [showProfile, setShowProfile] = useState(false);
   const [showFriends, setShowFriends] = useState(false);
+  const [pendingRequests, setPendingRequests] = useState<any[]>([]);
+  const [notification, setNotification] = useState<string | null>(null);
   const gameEngineRef = useRef<any>(null);
 
   useEffect(() => {
@@ -46,6 +50,21 @@ export default function App() {
     const unsubscribe = auth.onAuthStateChanged(u => setUser(u));
     return unsubscribe;
   }, []);
+
+  useEffect(() => {
+    if (user?.displayName) {
+      const unsub = subscribeFriendRequests(user.displayName, setPendingRequests);
+      return unsub;
+    }
+  }, [user]);
+
+  useEffect(() => {
+    if (pendingRequests.length > 0) {
+      setNotification(`${t(uiLanguage, 'friendRequestFrom')} ${pendingRequests[0].from}`);
+    } else {
+      setNotification(null);
+    }
+  }, [pendingRequests, uiLanguage]);
 
   // Oyun bittiğinde skor kaydet ve leaderboard'ı getir
   useEffect(() => {
@@ -278,6 +297,7 @@ export default function App() {
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
       {LevelBox}
       {InfoBar}
+      <NotificationBanner message={notification} />
       <GameEngine
         ref={gameEngineRef}
         style={styles.gameContainer}
