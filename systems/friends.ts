@@ -1,4 +1,4 @@
-import { collection, query, where, getDocs, setDoc, doc, deleteDoc, limit } from 'firebase/firestore';
+import { collection, query, where, getDocs, setDoc, doc, deleteDoc, limit, onSnapshot } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
 import { fetchUserProgress } from './leaderboard';
 
@@ -22,6 +22,12 @@ export async function sendFriendRequest(from: string, to: string) {
 
 export async function fetchFriendRequests(username: string) {
   const q = query(collection(db, 'friend_requests'), where('to', '==', username));
+  const snapshot = await getDocs(q);
+  return snapshot.docs.map(d => d.data());
+}
+
+export async function fetchSentFriendRequests(username: string) {
+  const q = query(collection(db, 'friend_requests'), where('from', '==', username));
   const snapshot = await getDocs(q);
   return snapshot.docs.map(d => d.data());
 }
@@ -52,4 +58,11 @@ export async function fetchFriendsWithProgress(username: string) {
     names.map(async n => ({ username: n, progress: await fetchUserProgress(n) }))
   );
   return result;
+}
+
+export function subscribeFriendRequests(username: string, cb: (reqs: any[]) => void) {
+  const q = query(collection(db, 'friend_requests'), where('to', '==', username));
+  return onSnapshot(q, snapshot => {
+    cb(snapshot.docs.map(d => d.data()));
+  });
 }
