@@ -3,7 +3,7 @@ import { Modal, View, Text, StyleSheet, TextInput, TouchableOpacity, ActivityInd
 import { theme } from '../theme';
 import { Lang, t } from '../translations';
 import { auth } from '../systems/auth';
-import { searchUsers, sendFriendRequest, fetchFriendRequests, acceptFriendRequest, fetchFriendsWithProgress } from '../systems/friends';
+import { searchUsers, sendFriendRequest, fetchFriendRequests, fetchSentFriendRequests, acceptFriendRequest, fetchFriendsWithProgress } from '../systems/friends';
 
 export default function FriendsScreen({ visible, onClose, uiLanguage }: { visible: boolean; onClose: () => void; uiLanguage: Lang }) {
   const user = auth.currentUser;
@@ -14,10 +14,15 @@ export default function FriendsScreen({ visible, onClose, uiLanguage }: { visibl
   const [friends, setFriends] = useState<any[]>([]);
   const [info, setInfo] = useState<string | null>(null);
   const [sentRequests, setSentRequests] = useState<string[]>([]);
+  const [outgoingRequests, setOutgoingRequests] = useState<any[]>([]);
 
   useEffect(() => {
     if (visible && user?.displayName) {
       fetchFriendRequests(user.displayName).then(setRequests);
+      fetchSentFriendRequests(user.displayName).then(reqs => {
+        setOutgoingRequests(reqs);
+        setSentRequests(reqs.map(r => r.to));
+      });
       fetchFriendsWithProgress(user.displayName).then(setFriends);
     }
     if (!visible) setInfo(null);
@@ -35,6 +40,7 @@ export default function FriendsScreen({ visible, onClose, uiLanguage }: { visibl
     await sendFriendRequest(user.displayName, name);
     setInfo(t(uiLanguage, 'requestSent'));
     setSentRequests(prev => [...prev, name]);
+    setOutgoingRequests(prev => [...prev, { from: user.displayName, to: name }]);
     setTimeout(() => setInfo(null), 2000);
   };
 
@@ -43,6 +49,10 @@ export default function FriendsScreen({ visible, onClose, uiLanguage }: { visibl
     await acceptFriendRequest(name, user.displayName);
     fetchFriendRequests(user.displayName).then(setRequests);
     fetchFriendsWithProgress(user.displayName).then(setFriends);
+    fetchSentFriendRequests(user.displayName).then(reqs => {
+      setOutgoingRequests(reqs);
+      setSentRequests(reqs.map(r => r.to));
+    });
   };
 
   return (
@@ -91,6 +101,12 @@ export default function FriendsScreen({ visible, onClose, uiLanguage }: { visibl
                 <TouchableOpacity style={styles.addButton} onPress={() => handleAccept(r.from)} activeOpacity={0.7}>
                   <Text style={styles.buttonText}>{t(uiLanguage, 'accept')}</Text>
                 </TouchableOpacity>
+              </View>
+            ))}
+            {outgoingRequests.map(r => (
+              <View key={`out_${r.to}`} style={styles.row}>
+                <Text style={styles.name}>{r.to}</Text>
+                <Text style={styles.sentText}>{t(uiLanguage, 'requestSent')}</Text>
               </View>
             ))}
           </ScrollView>
@@ -198,6 +214,10 @@ const styles = StyleSheet.create({
   info: {
     color: theme.colors.success,
     marginBottom: 6,
+    fontWeight: 'bold',
+  },
+  sentText: {
+    color: theme.colors.accent,
     fontWeight: 'bold',
   },
 });
