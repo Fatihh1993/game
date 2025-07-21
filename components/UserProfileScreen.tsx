@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Modal, View, Text, StyleSheet, ActivityIndicator, ScrollView, TouchableOpacity } from 'react-native';
+import { Modal, View, Text, StyleSheet, ActivityIndicator, ScrollView, TouchableOpacity, Image } from 'react-native';
 import { theme } from '../theme';
 import { Lang, t } from '../translations';
 import { fetchUserProgress } from '../systems/leaderboard';
@@ -12,6 +12,7 @@ export default function UserProfileScreen({ visible, onClose, username, uiLangua
   const [loading, setLoading] = useState(true);
   const [email, setEmail] = useState<string | null>(null);
   const [country, setCountry] = useState<string | null>(null);
+  const [photo, setPhoto] = useState<string | null>(null);
 
   useEffect(() => {
     if (!visible || !username) return;
@@ -23,6 +24,7 @@ export default function UserProfileScreen({ visible, onClose, username, uiLangua
           const data = snap.data();
           setEmail(data.email || null);
           setCountry(data.country || null);
+          if (data.photoURL) setPhoto(data.photoURL);
         }
       })
     ]).finally(() => setLoading(false));
@@ -39,6 +41,10 @@ export default function UserProfileScreen({ visible, onClose, username, uiLangua
           ) : (
             <ScrollView contentContainerStyle={{ alignItems: 'center' }}>
               <Text style={styles.title}>{t(uiLanguage, 'profile')}</Text>
+              <Image
+                source={photo ? { uri: photo } : require('../assets/default-avatar.png.png')}
+                style={styles.avatar}
+              />
               <View style={styles.userBox}>
                 <Text style={styles.username}>{username}</Text>
                 {email && <Text style={styles.email}>{email}</Text>}
@@ -63,6 +69,22 @@ export default function UserProfileScreen({ visible, onClose, username, uiLangua
                 ) : (
                   <Text style={styles.levels}>{t(uiLanguage, 'noProgress')}</Text>
                 )}
+              </View>
+              <Text style={styles.section}>{t(uiLanguage, 'badges')}</Text>
+              <View style={styles.badgesBox}>
+                {(() => {
+                  const total = Object.values(progress).reduce((s: number, l: any) => {
+                    const val = Array.isArray(l) ? Math.max(...l) : Number(l);
+                    return s + val;
+                  }, 0);
+                  const b: string[] = [];
+                  if (total >= 5) b.push('Beginner');
+                  if (total >= 15) b.push('Intermediate');
+                  if (total >= 30) b.push('Expert');
+                  return b.length > 0 ? b.map(name => (
+                    <Text key={name} style={styles.badge}>{name}</Text>
+                  )) : <Text style={styles.levels}>{t(uiLanguage, 'noProgress')}</Text>;
+                })()}
               </View>
             </ScrollView>
           )}
@@ -159,6 +181,27 @@ const styles = StyleSheet.create({
   },
   levels: {
     color: theme.colors.accent,
+    fontSize: 12,
+  },
+  avatar: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    marginBottom: 8,
+  },
+  badgesBox: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginBottom: 8,
+  },
+  badge: {
+    backgroundColor: theme.colors.primary,
+    color: theme.colors.text,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 6,
+    marginRight: 4,
+    marginBottom: 4,
     fontSize: 12,
   },
   closeButtonBox: {
