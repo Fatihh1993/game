@@ -26,6 +26,12 @@ export async function fetchFriendRequests(username: string) {
   return snapshot.docs.map(d => d.data());
 }
 
+export async function fetchSentFriendRequests(username: string) {
+  const q = query(collection(db, 'friend_requests'), where('from', '==', username));
+  const snapshot = await getDocs(q);
+  return snapshot.docs.map(d => d.data());
+}
+
 export async function acceptFriendRequest(from: string, to: string) {
   const id = `${from}_${to}`;
   await deleteDoc(doc(db, 'friend_requests', id));
