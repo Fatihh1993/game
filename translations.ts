@@ -53,6 +53,9 @@ export const translations: Record<Lang, Record<string, string>> = {
     requestSent: 'İstek gönderildi',
     friendRequestFrom: 'Arkadaşlık isteği:',
     viewProfile: 'Profili Gör',
+    badges: 'Rozetler',
+    uploadPhoto: 'Fotoğraf Yükle',
+    changePhoto: 'Fotoğrafı Değiştir',
   },
   en: {
     loginTitle: 'Login',
@@ -106,6 +109,9 @@ export const translations: Record<Lang, Record<string, string>> = {
     requestSent: 'Request sent',
     friendRequestFrom: 'Friend request from',
     viewProfile: 'View Profile',
+    badges: 'Badges',
+    uploadPhoto: 'Upload Photo',
+    changePhoto: 'Change Photo',
   },
 };
 

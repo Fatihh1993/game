@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Modal, View, Text, StyleSheet, ActivityIndicator, ScrollView, TouchableOpacity } from 'react-native';
+import { Modal, View, Text, StyleSheet, ActivityIndicator, ScrollView, TouchableOpacity, Image } from 'react-native';
+import { launchImageLibrary } from 'react-native-image-picker';
+import { updateProfile } from 'firebase/auth';
 import { theme } from '../theme';
 import { Lang, t } from '../translations';
 import { auth } from '../systems/auth';
@@ -12,6 +14,7 @@ export default function ProfileScreen({ onClose, visible, uiLanguage, onShowFrie
   const [progress, setProgress] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [country, setCountry] = useState<string | null>(null);
+  const [photo, setPhoto] = useState<string | null>(user?.photoURL ?? null);
   const user = auth.currentUser;
 
   useEffect(() => {
@@ -24,6 +27,22 @@ export default function ProfileScreen({ onClose, visible, uiLanguage, onShowFrie
       });
     }
   }, [user]);
+
+  const handlePickPhoto = () => {
+    launchImageLibrary({ mediaType: 'photo' }, async (response) => {
+      if (response.assets && response.assets.length > 0) {
+        const uri = response.assets[0].uri;
+        if (uri && user) {
+          setPhoto(uri);
+          try {
+            await updateProfile(user, { photoURL: uri });
+          } catch (e) {
+            console.log('Failed to update profile photo', e);
+          }
+        }
+      }
+    });
+  };
 
   if (!user) {
     return (
@@ -74,6 +93,15 @@ export default function ProfileScreen({ onClose, visible, uiLanguage, onShowFrie
       <View style={styles.overlay}>
         <View style={styles.card}>
           <Text style={styles.title}>{t(uiLanguage, 'profile')}</Text>
+          <Image
+            source={photo ? { uri: photo } : require('../assets/default-avatar.png.png')}
+            style={styles.avatar}
+          />
+          <TouchableOpacity style={styles.photoButton} onPress={handlePickPhoto} activeOpacity={0.7}>
+            <Text style={styles.photoButtonText}>
+              {photo ? t(uiLanguage, 'changePhoto') : t(uiLanguage, 'uploadPhoto')}
+            </Text>
+          </TouchableOpacity>
           <View style={styles.userBox}>
             <Text style={styles.username}>{user.displayName}</Text>
             <Text style={styles.email}>{user.email}</Text>
@@ -99,6 +127,22 @@ export default function ProfileScreen({ onClose, visible, uiLanguage, onShowFrie
           ) : (
             <Text style={styles.levels}>{t(uiLanguage, 'noProgress')}</Text>
           )}
+        </View>
+        <Text style={styles.section}>{t(uiLanguage, 'badges')}</Text>
+        <View style={styles.badgesBox}>
+          {(() => {
+            const total = Object.values(progress).reduce((s: number, l: any) => {
+              const val = Array.isArray(l) ? Math.max(...l) : Number(l);
+              return s + val;
+            }, 0);
+            const b: string[] = [];
+            if (total >= 5) b.push('Beginner');
+            if (total >= 15) b.push('Intermediate');
+            if (total >= 30) b.push('Expert');
+            return b.length > 0 ? b.map(name => (
+              <Text key={name} style={styles.badge}>{name}</Text>
+            )) : <Text style={styles.levels}>{t(uiLanguage, 'noProgress')}</Text>;
+          })()}
         </View>
         <TouchableOpacity style={styles.friendButtonBox} onPress={onShowFriends} activeOpacity={0.8}>
           <Text style={styles.closeButtonText}>{t(uiLanguage, 'friends')}</Text>
@@ -196,6 +240,38 @@ const styles = StyleSheet.create({
   },
   levels: {
     color: theme.colors.accent,
+    fontSize: 12,
+  },
+  avatar: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    marginBottom: 8,
+  },
+  photoButton: {
+    backgroundColor: theme.colors.primary,
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    marginBottom: 8,
+  },
+  photoButtonText: {
+    color: theme.colors.text,
+    fontWeight: 'bold',
+  },
+  badgesBox: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginBottom: 8,
+  },
+  badge: {
+    backgroundColor: theme.colors.primary,
+    color: theme.colors.text,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 6,
+    marginRight: 4,
+    marginBottom: 4,
     fontSize: 12,
   },
   friendButtonBox: {
