@@ -56,6 +56,9 @@ export const translations: Record<Lang, Record<string, string>> = {
     badges: 'Rozetler',
     uploadPhoto: 'Fotoğraf Yükle',
     changePhoto: 'Fotoğrafı Değiştir',
+    logout: 'Çıkış Yap',
+    showPassword: 'Göster',
+    hidePassword: 'Gizle',
   },
   en: {
     loginTitle: 'Login',
@@ -112,6 +115,9 @@ export const translations: Record<Lang, Record<string, string>> = {
     badges: 'Badges',
     uploadPhoto: 'Upload Photo',
     changePhoto: 'Change Photo',
+    logout: 'Logout',
+    showPassword: 'Show',
+    hidePassword: 'Hide',
   },
 };
 

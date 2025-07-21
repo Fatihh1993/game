@@ -20,6 +20,7 @@ export default function AuthScreen({
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [isRegister, setIsRegister] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -106,14 +107,25 @@ export default function AuthScreen({
             </View>
           </>
         )}
-        <TextInput
-          style={styles.input}
-          placeholder={t(uiLanguage, 'password')}
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry
-          placeholderTextColor="#888"
-        />
+        <View style={styles.passwordRow}>
+          <TextInput
+            style={[styles.input, { flex: 1 }]}
+            placeholder={t(uiLanguage, 'password')}
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry={!showPassword}
+            placeholderTextColor="#888"
+          />
+          <TouchableOpacity
+            onPress={() => setShowPassword(!showPassword)}
+            style={styles.showButton}
+            activeOpacity={0.7}
+          >
+            <Text style={styles.showButtonText}>
+              {showPassword ? t(uiLanguage, 'hidePassword') : t(uiLanguage, 'showPassword')}
+            </Text>
+          </TouchableOpacity>
+        </View>
         {error ? <Text style={styles.error}>{error}</Text> : null}
         <View style={styles.buttonRow}>
           <TouchableOpacity
@@ -219,6 +231,23 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
     paddingHorizontal: 8,
     paddingVertical: 2,
+  },
+  passwordRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 14,
+    width: 240,
+  },
+  showButton: {
+    marginLeft: 8,
+    paddingVertical: 6,
+    paddingHorizontal: 8,
+    backgroundColor: theme.colors.primary,
+    borderRadius: 6,
+  },
+  showButtonText: {
+    color: theme.colors.text,
+    fontWeight: 'bold',
   },
   pickerBox: { width: 240, marginBottom: 14, backgroundColor: theme.colors.card, borderRadius: 8 },
   picker: { color: theme.colors.text, width: 240, height: 44 },
