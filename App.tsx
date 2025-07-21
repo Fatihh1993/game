@@ -164,7 +164,7 @@ export default function App() {
 
   // Profilim butonu her ekranda aktif
   const ProfileButton = (
-    <View style={{ position: 'absolute', top: 40, right: 24, zIndex: 30 }}>
+    <View style={{ position: 'absolute', bottom: 40, right: 24, zIndex: 30 }}>
       <TouchableOpacity style={[styles.gameOverButton, { minWidth: 110, paddingVertical: 8, paddingHorizontal: 16 }]} onPress={() => setShowProfile(true)} activeOpacity={0.7}>
         <Text style={styles.gameOverButtonText}>{t(uiLanguage, 'myProfile')}</Text>
       </TouchableOpacity>
@@ -550,31 +550,31 @@ const styles = StyleSheet.create({
   },
   leaderboardButton: {
     backgroundColor: theme.colors.primary,
-    borderRadius: 8,
-    paddingVertical: 12,
-    paddingHorizontal: 28,
+    borderRadius: 12,
+    paddingVertical: 14,
+    paddingHorizontal: 32,
     alignItems: 'center',
     marginHorizontal: 8,
-    elevation: 2,
+    elevation: 3,
     borderWidth: 1.5,
     borderColor: '#005bb5',
     shadowColor: '#000',
-    shadowOpacity: 0.12,
-    shadowRadius: 4,
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
   },
   gameOverButton: {
     backgroundColor: theme.colors.primary,
-    borderRadius: 8,
-    paddingVertical: 12,
-    paddingHorizontal: 24,
+    borderRadius: 12,
+    paddingVertical: 14,
+    paddingHorizontal: 28,
     alignItems: 'center',
     marginHorizontal: 8,
-    elevation: 2,
+    elevation: 3,
     borderWidth: 1.5,
     borderColor: '#005bb5',
     shadowColor: '#000',
-    shadowOpacity: 0.12,
-    shadowRadius: 4,
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
     minWidth: 120,
   },
   gameOverButtonText: {

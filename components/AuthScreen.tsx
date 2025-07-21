@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
+import Icon from 'react-native-vector-icons/Ionicons';
 import { theme } from '../theme';
 import { Picker } from '@react-native-picker/picker';
 import { registerWithUsername, loginWithUsername } from '../systems/auth';
@@ -107,9 +108,9 @@ export default function AuthScreen({
             </View>
           </>
         )}
-        <View style={styles.passwordRow}>
+        <View style={styles.inputWrapper}>
           <TextInput
-            style={[styles.input, { flex: 1 }]}
+            style={[styles.input, { paddingRight: 40 }]}
             placeholder={t(uiLanguage, 'password')}
             value={password}
             onChangeText={setPassword}
@@ -118,12 +119,14 @@ export default function AuthScreen({
           />
           <TouchableOpacity
             onPress={() => setShowPassword(!showPassword)}
-            style={styles.showButton}
+            style={styles.eyeIcon}
             activeOpacity={0.7}
           >
-            <Text style={styles.showButtonText}>
-              {showPassword ? t(uiLanguage, 'hidePassword') : t(uiLanguage, 'showPassword')}
-            </Text>
+            <Icon
+              name={showPassword ? 'eye-off' : 'eye'}
+              size={20}
+              color={theme.colors.text}
+            />
           </TouchableOpacity>
         </View>
         {error ? <Text style={styles.error}>{error}</Text> : null}
@@ -216,12 +219,16 @@ const styles = StyleSheet.create({
   },
   authButton: {
     backgroundColor: theme.colors.primary,
-    borderRadius: 8,
+    borderRadius: 12,
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
     marginHorizontal: 8,
-    height: 44,
+    height: 48,
+    shadowColor: '#000',
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 3,
   },
   buttonText: {
     color: theme.colors.text,
@@ -232,22 +239,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVertical: 2,
   },
-  passwordRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 14,
+  inputWrapper: {
+    position: 'relative',
     width: 240,
+    marginBottom: 14,
   },
-  showButton: {
-    marginLeft: 8,
-    paddingVertical: 6,
-    paddingHorizontal: 8,
-    backgroundColor: theme.colors.primary,
-    borderRadius: 6,
-  },
-  showButtonText: {
-    color: theme.colors.text,
-    fontWeight: 'bold',
+  eyeIcon: {
+    position: 'absolute',
+    right: 12,
+    top: '50%',
+    marginTop: -10,
   },
   pickerBox: { width: 240, marginBottom: 14, backgroundColor: theme.colors.card, borderRadius: 8 },
   picker: { color: theme.colors.text, width: 240, height: 44 },
