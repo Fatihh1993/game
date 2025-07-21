@@ -5,16 +5,18 @@ import { updateProfile } from 'firebase/auth';
 import { theme } from '../theme';
 import { Lang, t } from '../translations';
 import { auth } from '../systems/auth';
-import { fetchUserProgress } from '../systems/leaderboard';
+import { fetchUserProgress, fetchLeaderboard } from '../systems/leaderboard';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
 import { countries } from './countries';
 
-export default function ProfileScreen({ onClose, visible, uiLanguage, onShowFriends }: { onClose: () => void, visible: boolean, uiLanguage: Lang, onShowFriends: () => void }) {
+export default function ProfileScreen({ onClose, visible, uiLanguage, onShowFriends, selectedLanguage }: { onClose: () => void; visible: boolean; uiLanguage: Lang; onShowFriends: () => void; selectedLanguage: string | null }) {
   const [progress, setProgress] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [country, setCountry] = useState<string | null>(null);
   const [photo, setPhoto] = useState<string | null>(user?.photoURL ?? null);
+  const [leaderboard, setLeaderboard] = useState<any[]>([]);
+  const [loadingLb, setLoadingLb] = useState(false);
   const user = auth.currentUser;
 
   useEffect(() => {
@@ -27,6 +29,17 @@ export default function ProfileScreen({ onClose, visible, uiLanguage, onShowFrie
       });
     }
   }, [user]);
+
+  useEffect(() => {
+    if (visible && selectedLanguage) {
+      setLoadingLb(true);
+      fetchLeaderboard(selectedLanguage)
+        .then(setLeaderboard)
+        .finally(() => setLoadingLb(false));
+    } else if (!selectedLanguage) {
+      setLeaderboard([]);
+    }
+  }, [visible, selectedLanguage]);
 
   const handlePickPhoto = () => {
     launchImageLibrary({ mediaType: 'photo' }, async (response) => {
@@ -144,6 +157,24 @@ export default function ProfileScreen({ onClose, visible, uiLanguage, onShowFrie
             )) : <Text style={styles.levels}>{t(uiLanguage, 'noProgress')}</Text>;
           })()}
         </View>
+        {selectedLanguage && (
+          <>
+            <Text style={styles.section}>{t(uiLanguage, 'leaderboard')}</Text>
+            <View style={styles.leaderboardBox}>
+              {loadingLb && <ActivityIndicator color={theme.colors.accent} style={{ marginVertical: 6 }} />}
+              {!loadingLb && leaderboard.length === 0 && (
+                <Text style={styles.levels}>{t(uiLanguage, 'noScores')}</Text>
+              )}
+              {!loadingLb && leaderboard.map((item, idx) => (
+                <View key={item.id} style={styles.leaderboardRow}>
+                  <Text style={styles.rank}>{idx + 1}.</Text>
+                  <Text style={styles.lbName}>{item.username}</Text>
+                  <Text style={styles.lbScore}>{item.score}</Text>
+                </View>
+              ))}
+            </View>
+          </>
+        )}
         <TouchableOpacity style={styles.friendButtonBox} onPress={onShowFriends} activeOpacity={0.8}>
           <Text style={styles.closeButtonText}>{t(uiLanguage, 'friends')}</Text>
         </TouchableOpacity>
@@ -267,6 +298,20 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     marginBottom: 8,
   },
+  leaderboardBox: {
+    width: '100%',
+    marginTop: 4,
+    marginBottom: 8,
+  },
+  leaderboardRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 4,
+  },
+  rank: { color: theme.colors.text, width: 24, textAlign: 'right', marginRight: 8 },
+  lbName: { color: theme.colors.text, flex: 1 },
+  lbScore: { color: theme.colors.accent, width: 40, textAlign: 'right' },
   badge: {
     backgroundColor: theme.colors.primary,
     color: theme.colors.text,
