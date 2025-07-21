@@ -147,6 +147,9 @@ export default function ProfileScreen({ onClose, visible, uiLanguage, onShowFrie
         <TouchableOpacity style={styles.friendButtonBox} onPress={onShowFriends} activeOpacity={0.8}>
           <Text style={styles.closeButtonText}>{t(uiLanguage, 'friends')}</Text>
         </TouchableOpacity>
+        <TouchableOpacity style={styles.closeButtonBox} onPress={async () => { await auth.signOut(); onClose(); }} activeOpacity={0.8}>
+          <Text style={styles.closeButtonText}>{t(uiLanguage, 'logout')}</Text>
+        </TouchableOpacity>
         <TouchableOpacity style={styles.closeButtonBox} onPress={onClose} activeOpacity={0.8}>
           <Text style={styles.closeButtonText}>{t(uiLanguage, 'close')}</Text>
         </TouchableOpacity>

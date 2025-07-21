@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Dimensions, Vibration } from 'react-native';
 import { Lang, t } from '../translations';
 
 export const Snippet = ({
@@ -41,6 +41,7 @@ export const Snippet = ({
     setSelectedAnswer(answer);
     setShowExplanation(true);
     setTimerActive(false);
+    Vibration.vibrate(answer ? 80 : 300);
   };
 
   const handleContinue = () => {
