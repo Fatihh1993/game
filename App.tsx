@@ -12,6 +12,7 @@ import { fetchLeaderboard, submitScore, saveUserProgress, fetchUserProgress } fr
 import ProfileScreen from './components/ProfileScreen';
 import FriendsScreen from './components/FriendsScreen';
 import NotificationBanner from './components/NotificationBanner';
+import LeaderboardLanguageModal from './components/LeaderboardLanguageModal';
 import { Lang, t } from './translations';
 import { subscribeFriendRequests } from './systems/friends';
 
@@ -35,6 +36,8 @@ export default function App() {
   const [lbError, setLbError] = useState<string | null>(null);
   const [showProfile, setShowProfile] = useState(false);
   const [showFriends, setShowFriends] = useState(false);
+  const [showLeaderboardLangSelect, setShowLeaderboardLangSelect] = useState(false);
+  const [leaderboardLanguage, setLeaderboardLanguage] = useState<string | null>(null);
   const [pendingRequests, setPendingRequests] = useState<any[]>([]);
   const [notification, setNotification] = useState<string | null>(null);
   const gameEngineRef = useRef<any>(null);
@@ -80,6 +83,13 @@ export default function App() {
       }
     }
   }, [gameOver, user, selectedLanguage, level]);
+
+  // fetch leaderboard when a language is chosen from the modal
+  useEffect(() => {
+    if (leaderboardLanguage) {
+      fetchLeaderboard(leaderboardLanguage).then(setLeaderboard);
+    }
+  }, [leaderboardLanguage]);
 
   const handleAnswer = async (isCorrect: boolean | null, id: string) => {
     if (isCorrect === null) return;
@@ -162,32 +172,7 @@ export default function App() {
     }
   }, [selectedLanguage, level]);
 
-  // Header with profile, leaderboard and logout buttons
-  const Header = (
-    <View style={styles.header}>
-      <TouchableOpacity
-        style={styles.headerButton}
-        onPress={() => setShowProfile(true)}
-        activeOpacity={0.7}
-      >
-        <Text style={styles.headerButtonText}>{t(uiLanguage, 'myProfile')}</Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={styles.headerButton}
-        onPress={() => setShowLeaderboard(true)}
-        activeOpacity={0.7}
-      >
-        <Text style={styles.headerButtonText}>{t(uiLanguage, 'leaderboard')}</Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={styles.headerButton}
-        onPress={() => auth.signOut()}
-        activeOpacity={0.7}
-      >
-        <Text style={styles.headerButtonText}>{t(uiLanguage, 'logout')}</Text>
-      </TouchableOpacity>
-    </View>
-  );
+  // top header removed per user request
 
   const Footer = (
     <View style={styles.footer}>
@@ -200,7 +185,7 @@ export default function App() {
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.headerButton}
-        onPress={() => setShowLeaderboard(true)}
+        onPress={() => setShowLeaderboardLangSelect(true)}
         activeOpacity={0.7}
       >
         <Text style={styles.headerButtonText}>{t(uiLanguage, 'leaderboard')}</Text>
@@ -228,7 +213,6 @@ export default function App() {
   if (!selectedLanguage) {
     return (
       <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
-        {Header}
         {/* Sadece dil seçtir, level yok */}
         <LanguageSelector
           onSelect={handleLanguageSelect}
@@ -274,7 +258,6 @@ export default function App() {
   if (loadingSnippets) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: theme.colors.background }}>
-        {Header}
         <ActivityIndicator size="large" color={theme.colors.accent} />
         <Text style={{ color: 'white', marginTop: 20 }}>{t(uiLanguage, 'loadingQuestions')}</Text>
         {showProfile && (
@@ -293,7 +276,6 @@ export default function App() {
   if (fetchError) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: theme.colors.background }}>
-        {Header}
         <Text style={{ color: 'red', marginBottom: 20 }}>{fetchError}</Text>
         <Button title={t(uiLanguage, 'tryAgain')} onPress={() => handleLanguageSelect(selectedLanguage!)} />
         {showProfile && (
@@ -342,7 +324,6 @@ export default function App() {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
-      {Header}
       {LevelBox}
       {InfoBar}
       <NotificationBanner message={notification} />
@@ -360,8 +341,8 @@ export default function App() {
           <Text style={styles.gameOverText}>GAME OVER</Text>
           <Text style={styles.finalScore}>{t(uiLanguage, 'scoreLabel')}: {score}</Text>
           <View style={{ flexDirection: 'row', gap: 12, marginBottom: 10, flexWrap: 'wrap', justifyContent: 'center' }}>
-            <TouchableOpacity style={[styles.gameOverButton, { flexShrink: 1, minWidth: 110 }]} onPress={() => setShowLeaderboard(true)} activeOpacity={0.7}>
-          <Text style={styles.gameOverButtonText}>{t(uiLanguage, 'leaderboard')}</Text>
+            <TouchableOpacity style={[styles.gameOverButton, { flexShrink: 1, minWidth: 110 }]} onPress={() => setShowLeaderboardLangSelect(true)} activeOpacity={0.7}>
+              <Text style={styles.gameOverButtonText}>{t(uiLanguage, 'leaderboard')}</Text>
             </TouchableOpacity>
             <TouchableOpacity style={[styles.gameOverButton, { flexShrink: 1, minWidth: 110 }]} onPress={resetGame} activeOpacity={0.7}>
           <Text style={styles.gameOverButtonText}>{t(uiLanguage, 'playAgain')}</Text>
@@ -392,7 +373,14 @@ export default function App() {
               </View>
             ))}
           </View>
-          <TouchableOpacity style={styles.gameOverButton} onPress={() => setShowLeaderboard(false)} activeOpacity={0.7}>
+          <TouchableOpacity
+            style={styles.gameOverButton}
+            onPress={() => {
+              setShowLeaderboard(false);
+              setLeaderboardLanguage(null);
+            }}
+            activeOpacity={0.7}
+          >
             <Text style={styles.gameOverButtonText}>{t(uiLanguage, 'close')}</Text>
           </TouchableOpacity>
         </View>
@@ -412,6 +400,18 @@ export default function App() {
             <Text style={styles.gameOverButtonText}>{t(uiLanguage, 'close')}</Text>
           </TouchableOpacity>
         </View>
+      )}
+      {showLeaderboardLangSelect && (
+        <LeaderboardLanguageModal
+          visible={showLeaderboardLangSelect}
+          uiLanguage={uiLanguage}
+          onSelect={(lang) => {
+            setLeaderboardLanguage(lang);
+            setShowLeaderboard(true);
+            setShowLeaderboardLangSelect(false);
+          }}
+          onClose={() => setShowLeaderboardLangSelect(false)}
+        />
       )}
       {Footer}
     </View>
