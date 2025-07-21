@@ -162,11 +162,29 @@ export default function App() {
     }
   }, [selectedLanguage, level]);
 
-  // Profilim butonu her ekranda aktif
-  const ProfileButton = (
-    <View style={{ position: 'absolute', bottom: 40, right: 24, zIndex: 30 }}>
-      <TouchableOpacity style={[styles.gameOverButton, { minWidth: 110, paddingVertical: 8, paddingHorizontal: 16 }]} onPress={() => setShowProfile(true)} activeOpacity={0.7}>
-        <Text style={styles.gameOverButtonText}>{t(uiLanguage, 'myProfile')}</Text>
+  // Header with profile, leaderboard and logout buttons
+  const Header = (
+    <View style={styles.header}>
+      <TouchableOpacity
+        style={styles.headerButton}
+        onPress={() => setShowProfile(true)}
+        activeOpacity={0.7}
+      >
+        <Text style={styles.headerButtonText}>{t(uiLanguage, 'myProfile')}</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={styles.headerButton}
+        onPress={() => setShowLeaderboard(true)}
+        activeOpacity={0.7}
+      >
+        <Text style={styles.headerButtonText}>{t(uiLanguage, 'leaderboard')}</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={styles.headerButton}
+        onPress={() => auth.signOut()}
+        activeOpacity={0.7}
+      >
+        <Text style={styles.headerButtonText}>{t(uiLanguage, 'logout')}</Text>
       </TouchableOpacity>
     </View>
   );
@@ -184,7 +202,7 @@ export default function App() {
   if (!selectedLanguage) {
     return (
       <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
-        {ProfileButton}
+        {Header}
         {/* Sadece dil seçtir, level yok */}
         <LanguageSelector
           onSelect={handleLanguageSelect}
@@ -229,7 +247,7 @@ export default function App() {
   if (loadingSnippets) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: theme.colors.background }}>
-        {ProfileButton}
+        {Header}
         <ActivityIndicator size="large" color={theme.colors.accent} />
         <Text style={{ color: 'white', marginTop: 20 }}>{t(uiLanguage, 'loadingQuestions')}</Text>
         {showProfile && (
@@ -247,7 +265,7 @@ export default function App() {
   if (fetchError) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: theme.colors.background }}>
-        {ProfileButton}
+        {Header}
         <Text style={{ color: 'red', marginBottom: 20 }}>{fetchError}</Text>
         <Button title={t(uiLanguage, 'tryAgain')} onPress={() => handleLanguageSelect(selectedLanguage!)} />
         {showProfile && (
@@ -295,6 +313,7 @@ export default function App() {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      {Header}
       {LevelBox}
       {InfoBar}
       <NotificationBanner message={notification} />
@@ -365,7 +384,6 @@ export default function App() {
           </TouchableOpacity>
         </View>
       )}
-      {ProfileButton}
     </View>
   );
 }
@@ -440,6 +458,25 @@ const styles = StyleSheet.create({
     shadowColor: '#000',
     shadowOpacity: 0.15,
     shadowRadius: 8,
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    backgroundColor: theme.colors.header,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+  },
+  headerButton: {
+    backgroundColor: theme.colors.primary,
+    borderRadius: 8,
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+  },
+  headerButtonText: {
+    color: theme.colors.text,
+    fontWeight: 'bold',
+    fontSize: 14,
   },
   infoItem: {
     alignItems: 'center',
