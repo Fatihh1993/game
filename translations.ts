@@ -52,6 +52,7 @@ export const translations: Record<Lang, Record<string, string>> = {
     accept: 'Kabul Et',
     requestSent: 'İstek gönderildi',
     friendRequestFrom: 'Arkadaşlık isteği:',
+    viewProfile: 'Profili Gör',
   },
   en: {
     loginTitle: 'Login',
@@ -104,6 +105,7 @@ export const translations: Record<Lang, Record<string, string>> = {
     accept: 'Accept',
     requestSent: 'Request sent',
     friendRequestFrom: 'Friend request from',
+    viewProfile: 'View Profile',
   },
 };
 

@@ -4,6 +4,7 @@ import { theme } from '../theme';
 import { Lang, t } from '../translations';
 import { auth } from '../systems/auth';
 import { searchUsers, sendFriendRequest, fetchFriendRequests, fetchSentFriendRequests, acceptFriendRequest, fetchFriendsWithProgress } from '../systems/friends';
+import UserProfileScreen from './UserProfileScreen';
 
 export default function FriendsScreen({ visible, onClose, uiLanguage }: { visible: boolean; onClose: () => void; uiLanguage: Lang }) {
   const user = auth.currentUser;
@@ -15,6 +16,7 @@ export default function FriendsScreen({ visible, onClose, uiLanguage }: { visibl
   const [info, setInfo] = useState<string | null>(null);
   const [sentRequests, setSentRequests] = useState<string[]>([]);
   const [outgoingRequests, setOutgoingRequests] = useState<any[]>([]);
+  const [selectedFriend, setSelectedFriend] = useState<string | null>(null);
 
   useEffect(() => {
     if (visible && user?.displayName) {
@@ -56,6 +58,7 @@ export default function FriendsScreen({ visible, onClose, uiLanguage }: { visibl
   };
 
   return (
+    <>
     <Modal visible={visible} animationType="fade" transparent onRequestClose={onClose}>
       <View style={styles.overlay}>
         <View style={styles.card}>
@@ -118,6 +121,9 @@ export default function FriendsScreen({ visible, onClose, uiLanguage }: { visibl
               <View key={f.username} style={styles.row}>
                 <Text style={styles.name}>{f.username}</Text>
                 <Text style={styles.levelText}>{Object.entries(f.progress).map(([lang, lvl]) => `${lang.toUpperCase()}: ${lvl}`).join(', ')}</Text>
+                <TouchableOpacity style={styles.profileButton} onPress={() => setSelectedFriend(f.username)} activeOpacity={0.7}>
+                  <Text style={styles.buttonText}>{t(uiLanguage, 'viewProfile')}</Text>
+                </TouchableOpacity>
               </View>
             ))}
           </ScrollView>
@@ -127,6 +133,15 @@ export default function FriendsScreen({ visible, onClose, uiLanguage }: { visibl
         </View>
       </View>
     </Modal>
+    {selectedFriend && (
+      <UserProfileScreen
+        visible={true}
+        onClose={() => setSelectedFriend(null)}
+        username={selectedFriend}
+        uiLanguage={uiLanguage}
+      />
+    )}
+    </>
   );
 }
 
@@ -176,6 +191,13 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     paddingHorizontal: 10,
     paddingVertical: 4,
+  },
+  profileButton: {
+    backgroundColor: theme.colors.primary,
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    marginLeft: 6,
   },
   buttonText: {
     color: theme.colors.text,
