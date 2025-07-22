@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Modal, View, Text, StyleSheet, ActivityIndicator, ScrollView, TouchableOpacity, Image } from 'react-native';
 import { launchImageLibrary } from 'react-native-image-picker';
 import { updateProfile } from 'firebase/auth';
-import { theme } from '../theme';
+import { useTheme } from '../theme';
 import { Lang, t } from '../translations';
 import { auth } from '../systems/auth';
 import { fetchUserProgress } from '../systems/leaderboard';
@@ -11,6 +11,7 @@ import { db } from '../firebaseConfig';
 import { countries } from './countries';
 
 export default function ProfileScreen({ onClose, visible, uiLanguage, onShowFriends }: { onClose: () => void, visible: boolean, uiLanguage: Lang, onShowFriends: () => void }) {
+  const { theme } = useTheme();
   const [progress, setProgress] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [country, setCountry] = useState<string | null>(null);
@@ -82,6 +83,115 @@ export default function ProfileScreen({ onClose, visible, uiLanguage, onShowFrie
   }
 
   let countryObj = countries.find(c => c.code === country);
+
+  const styles = React.useMemo(
+    () =>
+      StyleSheet.create({
+        overlay: {
+          flex: 1,
+          backgroundColor: theme.colors.overlay,
+          justifyContent: 'center',
+          alignItems: 'center',
+        },
+        card: {
+          width: 300,
+          backgroundColor: theme.colors.card,
+          borderRadius: 20,
+          padding: 24,
+          alignItems: 'center',
+          shadowColor: '#000',
+          shadowOpacity: 0.1,
+          shadowRadius: 8,
+          elevation: 4,
+        },
+        title: {
+          fontSize: 22,
+          fontWeight: 'bold',
+          color: theme.colors.accent,
+          marginBottom: 8,
+          letterSpacing: 0.5,
+        },
+        userBox: { alignItems: 'center', marginBottom: 4 },
+        username: { fontSize: 17, fontWeight: '600', color: theme.colors.text },
+        email: { fontSize: 13, color: '#bbb', marginTop: 1 },
+        countryBox: {
+          flexDirection: 'row',
+          alignItems: 'center',
+          backgroundColor: theme.colors.card,
+          borderRadius: 12,
+          paddingHorizontal: 12,
+          paddingVertical: 4,
+          marginVertical: 6,
+        },
+        flag: { fontSize: 18, marginRight: 6 },
+        country: { fontSize: 14, color: theme.colors.text },
+        section: {
+          fontSize: 15,
+          color: theme.colors.accent,
+          fontWeight: 'bold',
+          marginTop: 14,
+          marginBottom: 4,
+          alignSelf: 'flex-start',
+        },
+        progressBox: { width: '100%', marginTop: 2 },
+        langCard: {
+          backgroundColor: theme.colors.card,
+          borderRadius: 7,
+          padding: 6,
+          marginBottom: 5,
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+        },
+        langName: { color: theme.colors.text, fontWeight: 'bold', fontSize: 13 },
+        levels: { color: theme.colors.accent, fontSize: 12 },
+        avatar: { width: 80, height: 80, borderRadius: 40, marginBottom: 8 },
+        photoButton: {
+          backgroundColor: theme.colors.primary,
+          borderRadius: 12,
+          paddingHorizontal: 12,
+          paddingVertical: 6,
+          marginBottom: 8,
+        },
+        photoButtonText: { color: theme.colors.text, fontWeight: 'bold' },
+        badgesBox: { flexDirection: 'row', flexWrap: 'wrap', marginBottom: 8 },
+        badge: {
+          backgroundColor: theme.colors.primary,
+          color: theme.colors.text,
+          paddingHorizontal: 8,
+          paddingVertical: 2,
+          borderRadius: 8,
+          marginRight: 4,
+          marginBottom: 4,
+          fontSize: 12,
+        },
+        friendButtonBox: {
+          marginTop: 12,
+          width: '100%',
+          alignItems: 'center',
+          backgroundColor: theme.colors.primary,
+          borderRadius: 12,
+        },
+        closeButtonBox: {
+          marginTop: 14,
+          width: '100%',
+          alignItems: 'center',
+          backgroundColor: theme.colors.primary,
+          borderRadius: 12,
+        },
+        closeButtonText: {
+          color: theme.colors.text,
+          fontWeight: 'bold',
+          fontSize: 15,
+          paddingVertical: 7,
+          paddingHorizontal: 0,
+          textAlign: 'center',
+          width: '100%',
+        },
+        info: { color: '#bbb', fontSize: 15, textAlign: 'center', marginVertical: 8 },
+      }),
+    [theme]
+  );
 
   return (
     <Modal
@@ -156,151 +266,3 @@ export default function ProfileScreen({ onClose, visible, uiLanguage, onShowFrie
   );
 }
 
-const styles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-    backgroundColor: theme.colors.overlay,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  card: {
-    width: 300,
-    backgroundColor: theme.colors.card,
-    borderRadius: 20,
-    padding: 24,
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 4,
-  },
-  title: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    color: theme.colors.accent,
-    marginBottom: 8,
-    letterSpacing: 0.5,
-  },
-  userBox: {
-    alignItems: 'center',
-    marginBottom: 4,
-  },
-  username: {
-    fontSize: 17,
-    fontWeight: '600',
-    color: theme.colors.text,
-  },
-  email: {
-    fontSize: 13,
-    color: '#bbb',
-    marginTop: 1,
-  },
-  countryBox: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: theme.colors.card,
-    borderRadius: 12,
-    paddingHorizontal: 12,
-    paddingVertical: 4,
-    marginVertical: 6,
-  },
-  flag: {
-    fontSize: 18,
-    marginRight: 6,
-  },
-  country: {
-    fontSize: 14,
-    color: theme.colors.text,
-  },
-  section: {
-    fontSize: 15,
-    color: theme.colors.accent,
-    fontWeight: 'bold',
-    marginTop: 14,
-    marginBottom: 4,
-    alignSelf: 'flex-start',
-  },
-  progressBox: {
-    width: '100%',
-    marginTop: 2,
-  },
-  langCard: {
-    backgroundColor: theme.colors.card,
-    borderRadius: 7,
-    padding: 6,
-    marginBottom: 5,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  langName: {
-    color: theme.colors.text,
-    fontWeight: 'bold',
-    fontSize: 13,
-  },
-  levels: {
-    color: theme.colors.accent,
-    fontSize: 12,
-  },
-  avatar: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    marginBottom: 8,
-  },
-  photoButton: {
-    backgroundColor: theme.colors.primary,
-    borderRadius: 12,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    marginBottom: 8,
-  },
-  photoButtonText: {
-    color: theme.colors.text,
-    fontWeight: 'bold',
-  },
-  badgesBox: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    marginBottom: 8,
-  },
-  badge: {
-    backgroundColor: theme.colors.primary,
-    color: theme.colors.text,
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 8,
-    marginRight: 4,
-    marginBottom: 4,
-    fontSize: 12,
-  },
-  friendButtonBox: {
-    marginTop: 12,
-    width: '100%',
-    alignItems: 'center',
-    backgroundColor: theme.colors.primary,
-    borderRadius: 12,
-  },
-  closeButtonBox: {
-    marginTop: 14,
-    width: '100%',
-    alignItems: 'center',
-    backgroundColor: theme.colors.primary,
-    borderRadius: 12,
-  },
-  closeButtonText: {
-    color: theme.colors.text,
-    fontWeight: 'bold',
-    fontSize: 15,
-    paddingVertical: 7,
-    paddingHorizontal: 0,
-    textAlign: 'center',
-    width: '100%',
-  },
-  info: {
-    color: '#bbb',
-    fontSize: 15,
-    textAlign: 'center',
-    marginVertical: 8,
-  },
-});

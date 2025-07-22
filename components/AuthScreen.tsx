@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
-import { theme } from '../theme';
+import { useTheme } from '../theme';
 import { Picker } from '@react-native-picker/picker';
 import { registerWithUsername, loginWithUsername } from '../systems/auth';
 import { updateProfile } from 'firebase/auth';
@@ -17,6 +17,7 @@ export default function AuthScreen({
   onLanguageChange: (lang: Lang) => void;
 
 }) {
+  const { theme } = useTheme();
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -52,6 +53,96 @@ export default function AuthScreen({
       setLoading(false);
     }
   };
+
+  const styles = React.useMemo(
+    () =>
+      StyleSheet.create({
+        authContainer: {
+          flex: 1,
+          backgroundColor: theme.colors.background,
+          justifyContent: 'center',
+          alignItems: 'center',
+        },
+        langRow: {
+          flexDirection: 'row',
+          marginBottom: 12,
+          gap: 10,
+        },
+        langButton: {
+          backgroundColor: theme.colors.card,
+          paddingVertical: 8,
+          paddingHorizontal: 16,
+          borderRadius: 8,
+        },
+        langButtonActive: {
+          backgroundColor: theme.colors.primary,
+        },
+        langButtonText: { color: theme.colors.text, fontWeight: 'bold' },
+        authBox: {
+          backgroundColor: theme.colors.card,
+          borderRadius: 20,
+          padding: 32,
+          width: 320,
+          alignItems: 'center',
+          shadowColor: '#000',
+          shadowOpacity: 0.1,
+          shadowRadius: 12,
+          elevation: 6,
+        },
+        title: {
+          color: theme.colors.accent,
+          fontSize: 28,
+          fontWeight: 'bold',
+          marginBottom: 18,
+          letterSpacing: 1,
+        },
+        input: {
+          backgroundColor: theme.colors.card,
+          color: theme.colors.text,
+          borderRadius: 12,
+          padding: 12,
+          marginBottom: 16,
+          width: 260,
+          fontSize: 16,
+          borderWidth: 1,
+          borderColor: theme.colors.border,
+          shadowColor: '#000',
+          shadowOpacity: 0.05,
+          shadowRadius: 2,
+          elevation: 1,
+        },
+        error: { color: theme.colors.error, marginBottom: 10 },
+        success: { color: theme.colors.success, marginBottom: 10, fontWeight: 'bold' },
+        buttonRow: {
+          flexDirection: 'row',
+          marginTop: 8,
+          width: '100%',
+          justifyContent: 'space-between',
+          gap: 0,
+        },
+        authButton: {
+          backgroundColor: theme.colors.primary,
+          borderRadius: 12,
+          flex: 1,
+          alignItems: 'center',
+          justifyContent: 'center',
+          marginHorizontal: 8,
+          height: 48,
+        },
+        buttonText: {
+          color: theme.colors.text,
+          fontWeight: 'bold',
+          fontSize: 16,
+          textAlign: 'center',
+          letterSpacing: 0.5,
+          paddingHorizontal: 8,
+          paddingVertical: 2,
+        },
+        pickerBox: { width: 240, marginBottom: 14, backgroundColor: theme.colors.card, borderRadius: 8 },
+        picker: { color: theme.colors.text, width: 240, height: 44 },
+      }),
+    [theme]
+  );
 
   return (
     <View style={[styles.authContainer, { backgroundColor: theme.colors.background }]}>
@@ -138,88 +229,3 @@ export default function AuthScreen({
   );
 }
 
-const styles = StyleSheet.create({
-  authContainer: {
-    flex: 1,
-    backgroundColor: theme.colors.background,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  langRow: {
-    flexDirection: 'row',
-    marginBottom: 12,
-    gap: 10,
-  },
-  langButton: {
-    backgroundColor: theme.colors.card,
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderRadius: 8,
-  },
-  langButtonActive: {
-    backgroundColor: theme.colors.primary,
-  },
-  langButtonText: { color: theme.colors.text, fontWeight: 'bold' },
-  authBox: {
-    backgroundColor: theme.colors.card,
-    borderRadius: 20,
-    padding: 32,
-    width: 320,
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 12,
-    elevation: 6,
-  },
-  title: {
-    color: theme.colors.accent,
-    fontSize: 28,
-    fontWeight: 'bold',
-    marginBottom: 18,
-    letterSpacing: 1,
-  },
-  input: {
-    backgroundColor: theme.colors.card,
-    color: theme.colors.text,
-    borderRadius: 12,
-    padding: 12,
-    marginBottom: 16,
-    width: 260,
-    fontSize: 16,
-    borderWidth: 1,
-    borderColor: theme.colors.border,
-    shadowColor: '#000',
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 1,
-  },
-  error: { color: theme.colors.error, marginBottom: 10 },
-  success: { color: theme.colors.success, marginBottom: 10, fontWeight: 'bold' },
-  buttonRow: {
-    flexDirection: 'row',
-    marginTop: 8,
-    width: '100%',
-    justifyContent: 'space-between',
-    gap: 0,
-  },
-  authButton: {
-    backgroundColor: theme.colors.primary,
-    borderRadius: 12,
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginHorizontal: 8,
-    height: 48,
-  },
-  buttonText: {
-    color: theme.colors.text,
-    fontWeight: 'bold',
-    fontSize: 16,
-    textAlign: 'center',
-    letterSpacing: 0.5,
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-  },
-  pickerBox: { width: 240, marginBottom: 14, backgroundColor: theme.colors.card, borderRadius: 8 },
-  picker: { color: theme.colors.text, width: 240, height: 44 },
-});
