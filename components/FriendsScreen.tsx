@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Modal, View, Text, StyleSheet, TextInput, TouchableOpacity, ActivityIndicator, ScrollView } from 'react-native';
-import { theme } from '../theme';
+import { useTheme } from '../theme';
 import { Lang, t } from '../translations';
 import { auth } from '../systems/auth';
 import { searchUsers, sendFriendRequest, fetchFriendRequests, fetchSentFriendRequests, acceptFriendRequest, fetchFriendsWithProgress } from '../systems/friends';
@@ -17,6 +17,9 @@ export default function FriendsScreen({ visible, onClose, uiLanguage }: { visibl
   const [sentRequests, setSentRequests] = useState<string[]>([]);
   const [outgoingRequests, setOutgoingRequests] = useState<any[]>([]);
   const [selectedFriend, setSelectedFriend] = useState<string | null>(null);
+
+  const { theme } = useTheme();
+  const styles = useMemo(() => createStyles(theme), [theme]);
 
   useEffect(() => {
     if (visible && user?.displayName) {
@@ -145,7 +148,7 @@ export default function FriendsScreen({ visible, onClose, uiLanguage }: { visibl
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (theme: any) => StyleSheet.create({
   overlay: {
     flex: 1,
     backgroundColor: theme.colors.overlay,

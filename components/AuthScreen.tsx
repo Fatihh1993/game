@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
-import { theme } from '../theme';
+import { useTheme, darkTheme } from '../theme';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { Picker } from '@react-native-picker/picker';
 import { registerWithUsername, loginWithUsername } from '../systems/auth';
 import { updateProfile } from 'firebase/auth';
@@ -25,6 +26,9 @@ export default function AuthScreen({
   const [loading, setLoading] = useState(false);
   const [registerSuccess, setRegisterSuccess] = useState(false);
   const [country, setCountry] = useState('TR');
+
+  const { theme, toggleTheme } = useTheme();
+  const styles = useMemo(() => createStyles(theme), [theme]);
 
 
   const handleSubmit = async () => {
@@ -67,6 +71,13 @@ export default function AuthScreen({
           onPress={() => onLanguageChange('en')}
         >
           <Text style={styles.langButtonText}>EN</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.themeButton} onPress={toggleTheme}>
+          {theme === darkTheme ? (
+            <Ionicons name="sunny" size={20} color={theme.colors.text} />
+          ) : (
+            <Ionicons name="moon" size={20} color={theme.colors.text} />
+          )}
         </TouchableOpacity>
       </View>
       <View style={styles.authBox}>
@@ -138,7 +149,7 @@ export default function AuthScreen({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (theme: any) => StyleSheet.create({
   authContainer: {
     flex: 1,
     backgroundColor: theme.colors.background,
@@ -158,6 +169,12 @@ const styles = StyleSheet.create({
   },
   langButtonActive: {
     backgroundColor: theme.colors.primary,
+  },
+  themeButton: {
+    backgroundColor: theme.colors.card,
+    paddingVertical: 6,
+    paddingHorizontal: 8,
+    borderRadius: 6,
   },
   langButtonText: { color: theme.colors.text, fontWeight: 'bold' },
   authBox: {

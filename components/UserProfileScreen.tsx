@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { Modal, View, Text, StyleSheet, ActivityIndicator, ScrollView, TouchableOpacity, Image } from 'react-native';
-import { theme } from '../theme';
+import { useTheme } from '../theme';
 import { Lang, t } from '../translations';
 import { fetchUserProgress } from '../systems/leaderboard';
 import { doc, getDoc } from 'firebase/firestore';
@@ -13,6 +13,8 @@ export default function UserProfileScreen({ visible, onClose, username, uiLangua
   const [email, setEmail] = useState<string | null>(null);
   const [country, setCountry] = useState<string | null>(null);
   const [photo, setPhoto] = useState<string | null>(null);
+  const { theme } = useTheme();
+  const styles = useMemo(() => createStyles(theme), [theme]);
 
   useEffect(() => {
     if (!visible || !username) return;
@@ -97,7 +99,7 @@ export default function UserProfileScreen({ visible, onClose, username, uiLangua
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (theme: any) => StyleSheet.create({
   overlay: {
     flex: 1,
     backgroundColor: theme.colors.overlay,
