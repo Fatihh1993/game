@@ -7,6 +7,7 @@ import {
   ActivityIndicator,
   TouchableOpacity,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from './theme';
 import { GameEngine } from 'react-native-game-engine';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -204,37 +205,31 @@ export default function App() {
 
   // Profilim butonu her ekranda aktif
   const ProfileButton = (
-    <View style={{ position: 'absolute', top: 40, right: 24, zIndex: 30 }}>
-      <TouchableOpacity
-        style={[
-          styles.gameOverButton,
-          { minWidth: 110, paddingVertical: 8, paddingHorizontal: 16 },
-        ]}
-        onPress={() => setShowProfile(true)}
-        activeOpacity={0.7}
-      >
-        <Text style={styles.gameOverButtonText}>
-          {t(uiLanguage, 'myProfile')}
-        </Text>
-      </TouchableOpacity>
-    </View>
+    <TouchableOpacity
+      style={[styles.topButton, styles.topRight]}
+      onPress={() => setShowProfile(true)}
+      activeOpacity={0.7}
+    >
+      <Ionicons
+        name="person-circle-outline"
+        size={26}
+        color={theme.colors.text}
+      />
+    </TouchableOpacity>
   );
 
   const PauseButton = (
-    <View style={{ position: 'absolute', top: 40, left: 24, zIndex: 30 }}>
-      <TouchableOpacity
-        style={[
-          styles.gameOverButton,
-          { minWidth: 110, paddingVertical: 8, paddingHorizontal: 16 },
-        ]}
-        onPress={() => setPaused(prev => !prev)}
-        activeOpacity={0.7}
-      >
-        <Text style={styles.gameOverButtonText}>
-          {paused ? t(uiLanguage, 'resume') : t(uiLanguage, 'pause')}
-        </Text>
-      </TouchableOpacity>
-    </View>
+    <TouchableOpacity
+      style={[styles.topButton, styles.topLeft]}
+      onPress={() => setPaused(prev => !prev)}
+      activeOpacity={0.7}
+    >
+      <Ionicons
+        name={paused ? 'play-circle-outline' : 'pause-circle-outline'}
+        size={26}
+        color={theme.colors.text}
+      />
+    </TouchableOpacity>
   );
 
   if (!user) {
@@ -444,32 +439,74 @@ export default function App() {
   const InfoBar = (
     <View style={styles.infoBar}>
       <View style={styles.infoItem}>
-        <Text style={styles.infoLabel}>{t(uiLanguage, 'score')}</Text>
+        <Ionicons
+          name="stats-chart"
+          size={18}
+          color={theme.colors.accent}
+          style={styles.infoIcon}
+        />
         <Text style={styles.infoValue}>{score}</Text>
+        <Text style={styles.infoLabel}>{t(uiLanguage, 'score')}</Text>
       </View>
       <View style={styles.infoItem}>
-        <Text style={styles.infoLabel}>{t(uiLanguage, 'lives')}</Text>
+        <Ionicons
+          name="heart"
+          size={18}
+          color={theme.colors.accent}
+          style={styles.infoIcon}
+        />
         <Text style={styles.infoValue}>{lives}</Text>
+        <Text style={styles.infoLabel}>{t(uiLanguage, 'lives')}</Text>
       </View>
       <View style={styles.infoItem}>
-        <Text style={styles.infoLabel}>{t(uiLanguage, 'best')}</Text>
+        <Ionicons
+          name="trophy"
+          size={18}
+          color={theme.colors.accent}
+          style={styles.infoIcon}
+        />
         <Text style={styles.infoValue}>{bestScore}</Text>
+        <Text style={styles.infoLabel}>{t(uiLanguage, 'best')}</Text>
       </View>
       <View style={styles.infoItem}>
-        <Text style={styles.infoLabel}>{t(uiLanguage, 'streak')}</Text>
+        <Ionicons
+          name="flame"
+          size={18}
+          color={theme.colors.accent}
+          style={styles.infoIcon}
+        />
         <Text style={styles.infoValue}>{streak}</Text>
+        <Text style={styles.infoLabel}>{t(uiLanguage, 'streak')}</Text>
       </View>
       <View style={styles.infoItem}>
-        <Text style={styles.infoLabel}>{t(uiLanguage, 'bestStreak')}</Text>
+        <Ionicons
+          name="flame-outline"
+          size={18}
+          color={theme.colors.accent}
+          style={styles.infoIcon}
+        />
         <Text style={styles.infoValue}>{bestStreak}</Text>
+        <Text style={styles.infoLabel}>{t(uiLanguage, 'bestStreak')}</Text>
       </View>
       <View style={styles.infoItem}>
-        <Text style={styles.infoLabel}>{t(uiLanguage, 'xp')}</Text>
+        <Ionicons
+          name="diamond"
+          size={18}
+          color={theme.colors.accent}
+          style={styles.infoIcon}
+        />
         <Text style={styles.infoValue}>{xp}/100</Text>
+        <Text style={styles.infoLabel}>{t(uiLanguage, 'xp')}</Text>
       </View>
       <View style={styles.infoItem}>
-        <Text style={styles.infoLabel}>{t(uiLanguage, 'level')}</Text>
+        <Ionicons
+          name="layers"
+          size={18}
+          color={theme.colors.accent}
+          style={styles.infoIcon}
+        />
         <Text style={styles.infoValue}>{level}</Text>
+        <Text style={styles.infoLabel}>{t(uiLanguage, 'level')}</Text>
       </View>
     </View>
   );
@@ -725,14 +762,16 @@ const createStyles = (theme: any) =>
     },
     infoBar: {
       flexDirection: 'row',
-      justifyContent: 'space-around',
+      flexWrap: 'wrap',
+      justifyContent: 'space-between',
       alignItems: 'center',
       backgroundColor: theme.colors.card,
       borderRadius: 12,
-      marginHorizontal: 18,
+      marginHorizontal: 16,
       marginTop: 10,
       marginBottom: 8,
-      paddingVertical: 10,
+      paddingVertical: 8,
+      paddingHorizontal: 10,
       elevation: 3,
       shadowColor: '#000',
       shadowOpacity: 0.15,
@@ -740,26 +779,25 @@ const createStyles = (theme: any) =>
     },
     infoItem: {
       alignItems: 'center',
-      flex: 1,
-      paddingHorizontal: 8,
+      justifyContent: 'center',
+      width: '25%',
+      marginVertical: 6,
+    },
+    infoIcon: {
+      marginBottom: 2,
     },
     infoLabel: {
       color: theme.colors.accent,
-      fontSize: 15,
+      fontSize: 12,
       fontWeight: 'bold',
-      marginBottom: 2,
       letterSpacing: 0.5,
-      textShadowColor: '#000',
-      textShadowOffset: { width: 0, height: 1 },
-      textShadowRadius: 2,
+      textAlign: 'center',
     },
     infoValue: {
       color: theme.colors.text,
-      fontSize: 22,
+      fontSize: 18,
       fontWeight: 'bold',
-      textShadowColor: '#000',
-      textShadowOffset: { width: 0, height: 1 },
-      textShadowRadius: 2,
+      marginBottom: 2,
     },
     levelSelectContainer: {
       flex: 1,
@@ -881,4 +919,15 @@ const createStyles = (theme: any) =>
       letterSpacing: 0.5,
       textAlign: 'center',
     },
+    topButton: {
+      position: 'absolute',
+      top: 40,
+      backgroundColor: theme.colors.card,
+      padding: 8,
+      borderRadius: 20,
+      elevation: 2,
+      zIndex: 30,
+    },
+    topRight: { right: 20 },
+    topLeft: { left: 20 },
   });
