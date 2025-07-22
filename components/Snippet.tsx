@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Dimensions,
+} from 'react-native';
 import { Lang, t } from '../translations';
 
 export const Snippet = ({
@@ -8,10 +14,21 @@ export const Snippet = ({
   onAnswer,
   explanation,
   isCorrect,
+  isGold,
   onToggleExplanation,
   timeLimit = 5,
   uiLanguage,
-}: { position: number[]; code: any; onAnswer: Function; explanation: any; isCorrect: boolean; onToggleExplanation: (val: boolean) => void; timeLimit?: number; uiLanguage: Lang; }) => {
+}: {
+  position: number[];
+  code: any;
+  onAnswer: Function;
+  explanation: any;
+  isCorrect: boolean;
+  isGold?: boolean;
+  onToggleExplanation: (val: boolean) => void;
+  timeLimit?: number;
+  uiLanguage: Lang;
+}) => {
   const [showExplanation, setShowExplanation] = useState(false);
   const [selectedAnswer, setSelectedAnswer] = useState<null | boolean>(null);
   const [timeLeft, setTimeLeft] = useState(timeLimit);
@@ -50,23 +67,42 @@ export const Snippet = ({
     setTimerActive(true);
     // Kullanıcının seçimi ile doğru cevabı karşılaştır
     const userGotItRight = selectedAnswer === isCorrect;
-    onAnswer(userGotItRight);
+    onAnswer(userGotItRight, isGold);
   };
 
   const screenHeight = Dimensions.get('window').height;
   const snippetHeight = 260; // tahmini yükseklik
   // Pozisyonu ayarla: Eğer kutu ekranın altına taşacaksa yukarıda göster
-  const topPos = position[1] + snippetHeight > screenHeight - 20 ? screenHeight - snippetHeight - 20 : position[1];
+  const topPos =
+    position[1] + snippetHeight > screenHeight - 20
+      ? screenHeight - snippetHeight - 20
+      : position[1];
 
   return (
-    <View style={[styles.snippetContainer, { top: topPos, left: position[0] }]}>
+    <View
+      style={[
+        styles.snippetContainer,
+        isGold && styles.goldContainer,
+        { top: topPos, left: position[0] },
+      ]}
+    >
+      {isGold && (
+        <Text style={styles.goldLabel}>⭐ {t(uiLanguage, 'goldQuestion')}</Text>
+      )}
       <Text style={styles.code}>
         {typeof code === 'object' ? code[uiLanguage] || code['en'] : code}
       </Text>
       <View style={styles.timerBarContainer}>
-        <View style={[styles.timerBar, { width: `${(timeLeft / timeLimit) * 100}%` }]} />
+        <View
+          style={[
+            styles.timerBar,
+            { width: `${(timeLeft / timeLimit) * 100}%` },
+          ]}
+        />
       </View>
-      <Text style={styles.timerText}>{timeLeft} {t(uiLanguage, 'secondsAbbrev')}</Text>
+      <Text style={styles.timerText}>
+        {timeLeft} {t(uiLanguage, 'secondsAbbrev')}
+      </Text>
       <View style={styles.buttonRow}>
         <TouchableOpacity
           style={[styles.buttonWrapper, styles.correctButton]}
@@ -93,8 +129,13 @@ export const Snippet = ({
               ? explanation[uiLanguage] || explanation['en']
               : explanation}
           </Text>
-          <TouchableOpacity style={styles.continueButton} onPress={handleContinue}>
-            <Text style={styles.continueButtonText}>{t(uiLanguage, 'continue')}</Text>
+          <TouchableOpacity
+            style={styles.continueButton}
+            onPress={handleContinue}
+          >
+            <Text style={styles.continueButtonText}>
+              {t(uiLanguage, 'continue')}
+            </Text>
           </TouchableOpacity>
         </View>
       )}
@@ -159,6 +200,16 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 18,
     fontWeight: 'bold',
+  },
+  goldContainer: {
+    borderColor: '#ffd700',
+    borderWidth: 2,
+  },
+  goldLabel: {
+    color: '#ffd700',
+    fontWeight: 'bold',
+    alignSelf: 'center',
+    marginBottom: 4,
   },
   explanationBox: {
     marginTop: 10,
