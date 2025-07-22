@@ -22,6 +22,9 @@ export default function App() {
   const [lives, setLives] = useState(3);
   const [level, setLevel] = useState(1);
   const [bestScore, setBestScore] = useState(0);
+  const [streak, setStreak] = useState(0);
+  const [bestStreak, setBestStreak] = useState(0);
+  const [paused, setPaused] = useState(false);
   const [gameOver, setGameOver] = useState(false);
   const [unlockedLevel, setUnlockedLevel] = useState(1);
   const [correctInLevel, setCorrectInLevel] = useState(0);
@@ -42,6 +45,9 @@ export default function App() {
   useEffect(() => {
     AsyncStorage.getItem('bestScore').then(value => {
       if (value) setBestScore(parseInt(value));
+    });
+    AsyncStorage.getItem('bestStreak').then(value => {
+      if (value) setBestStreak(parseInt(value));
     });
   }, []);
 
@@ -86,6 +92,7 @@ export default function App() {
     const isRight = isCorrect === true;
     setScore(prev => prev + (isRight ? 1 : 0));
     if (isRight) {
+      setStreak(prev => prev + 1);
       setCorrectInLevel(prev => {
         const newCorrect = prev + 1;
         if (newCorrect >= 5) {
@@ -94,6 +101,8 @@ export default function App() {
         }
         return newCorrect;
       });
+    } else {
+      setStreak(0);
     }
     if (!isRight) {
       setLives(prev => {
@@ -115,6 +124,13 @@ export default function App() {
     }
   };
 
+  useEffect(() => {
+    if (streak > bestStreak) {
+      setBestStreak(streak);
+      AsyncStorage.setItem('bestStreak', streak.toString());
+    }
+  }, [streak]);
+
   // Oyun sıfırlama
   const resetGame = () => {
     setScore(0);
@@ -124,6 +140,8 @@ export default function App() {
     setGameOver(false);
     setSelectedLanguage(null);
     setLevel(1); // Seçim ekranında tekrar doğru seviyeye çekilecek
+    setStreak(0);
+    setPaused(false);
   };
 
   // DİKKAT: Dil seçildiğinde kullanıcının o dildeki seviyesini çek ve başlat
@@ -167,6 +185,18 @@ export default function App() {
     <View style={{ position: 'absolute', top: 40, right: 24, zIndex: 30 }}>
       <TouchableOpacity style={[styles.gameOverButton, { minWidth: 110, paddingVertical: 8, paddingHorizontal: 16 }]} onPress={() => setShowProfile(true)} activeOpacity={0.7}>
         <Text style={styles.gameOverButtonText}>{t(uiLanguage, 'myProfile')}</Text>
+      </TouchableOpacity>
+    </View>
+  );
+
+  const PauseButton = (
+    <View style={{ position: 'absolute', top: 40, left: 24, zIndex: 30 }}>
+      <TouchableOpacity
+        style={[styles.gameOverButton, { minWidth: 110, paddingVertical: 8, paddingHorizontal: 16 }]}
+        onPress={() => setPaused(prev => !prev)}
+        activeOpacity={0.7}
+      >
+        <Text style={styles.gameOverButtonText}>{paused ? t(uiLanguage, 'resume') : t(uiLanguage, 'pause')}</Text>
       </TouchableOpacity>
     </View>
   );
@@ -285,6 +315,14 @@ export default function App() {
         <Text style={styles.infoValue}>{bestScore}</Text>
       </View>
       <View style={styles.infoItem}>
+        <Text style={styles.infoLabel}>{t(uiLanguage, 'streak')}</Text>
+        <Text style={styles.infoValue}>{streak}</Text>
+      </View>
+      <View style={styles.infoItem}>
+        <Text style={styles.infoLabel}>{t(uiLanguage, 'bestStreak')}</Text>
+        <Text style={styles.infoValue}>{bestStreak}</Text>
+      </View>
+      <View style={styles.infoItem}>
         <Text style={styles.infoLabel}>{t(uiLanguage, 'level')}</Text>
         <Text style={styles.infoValue}>{level}</Text>
       </View>
@@ -296,6 +334,7 @@ export default function App() {
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
       {LevelBox}
+      {selectedLanguage && !gameOver && PauseButton}
       {InfoBar}
       <NotificationBanner message={notification} />
       <GameEngine
@@ -303,10 +342,18 @@ export default function App() {
         style={styles.gameContainer}
         systems={[hackSystem(handleAnswer, snippets, uiLanguage)]}
         entities={gameOver ? {} : entities}
-        running={!gameOver}
+        running={!gameOver && !paused}
       >
         {/* Skor, Can, Rekor metinleri kaldırıldı, InfoBar yukarıda */}
       </GameEngine>
+      {paused && !gameOver && (
+        <View style={styles.overlay}>
+          <Text style={styles.gameOverText}>{t(uiLanguage, 'paused')}</Text>
+          <TouchableOpacity style={styles.gameOverButton} onPress={() => setPaused(false)} activeOpacity={0.7}>
+            <Text style={styles.gameOverButtonText}>{t(uiLanguage, 'resume')}</Text>
+          </TouchableOpacity>
+        </View>
+      )}
       {gameOver && !showLeaderboard && (
         <View style={styles.overlay}>
           <Text style={styles.gameOverText}>GAME OVER</Text>
