@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { theme } from '../theme';
+import { useTheme } from '../theme';
 import { Lang, t } from '../translations';
 
 export const LanguageSelector = ({
@@ -13,6 +13,8 @@ export const LanguageSelector = ({
 }) => {
   const [language, setLanguage] = useState<string | null>(null);
   const [showReady, setShowReady] = useState(false);
+  const { theme } = useTheme();
+  const styles = useMemo(() => createStyles(theme), [theme]);
 
   const handleLanguage = (lang: string) => {
     setLanguage(lang);
@@ -62,7 +64,7 @@ export const LanguageSelector = ({
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (theme: any) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: theme.colors.background,

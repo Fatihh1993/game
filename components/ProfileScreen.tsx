@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { Modal, View, Text, StyleSheet, ActivityIndicator, ScrollView, TouchableOpacity, Image } from 'react-native';
 import { launchImageLibrary } from 'react-native-image-picker';
 import { updateProfile } from 'firebase/auth';
-import { theme } from '../theme';
+import { useTheme } from '../theme';
 import { Lang, t } from '../translations';
 import { auth } from '../systems/auth';
 import { fetchUserProgress } from '../systems/leaderboard';
@@ -16,6 +16,8 @@ export default function ProfileScreen({ onClose, visible, uiLanguage, onShowFrie
   const [country, setCountry] = useState<string | null>(null);
   const [photo, setPhoto] = useState<string | null>(user?.photoURL ?? null);
   const user = auth.currentUser;
+  const { theme } = useTheme();
+  const styles = useMemo(() => createStyles(theme), [theme]);
 
   useEffect(() => {
     if (user?.displayName) {
@@ -156,7 +158,7 @@ export default function ProfileScreen({ onClose, visible, uiLanguage, onShowFrie
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (theme: any) => StyleSheet.create({
   overlay: {
     flex: 1,
     backgroundColor: theme.colors.overlay,

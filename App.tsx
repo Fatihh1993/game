@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { StyleSheet, View, Text, Button, ActivityIndicator, TouchableOpacity } from 'react-native';
-import { theme } from './theme';
+import { ThemeProvider, useTheme, Theme } from './theme';
 import { GameEngine } from 'react-native-game-engine';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LanguageSelector } from './components/LanguageSelector';
@@ -15,7 +15,7 @@ import NotificationBanner from './components/NotificationBanner';
 import { Lang, t } from './translations';
 import { subscribeFriendRequests } from './systems/friends';
 
-export default function App() {
+function MainApp() {
   const [selectedLanguage, setSelectedLanguage] = useState<string | null>(null);
   const [uiLanguage, setUiLanguage] = useState<Lang>('tr');
   const [score, setScore] = useState(0);
@@ -38,6 +38,8 @@ export default function App() {
   const [pendingRequests, setPendingRequests] = useState<any[]>([]);
   const [notification, setNotification] = useState<string | null>(null);
   const gameEngineRef = useRef<any>(null);
+  const { theme } = useTheme();
+  const styles = React.useMemo(() => createStyles(theme), [theme]);
 
   useEffect(() => {
     AsyncStorage.getItem('bestScore').then(value => {
@@ -370,7 +372,7 @@ export default function App() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (theme: Theme) => StyleSheet.create({
   container: { flex: 1, backgroundColor: theme.colors.background },
   gameContainer: { flex: 1 },
   overlay: {
@@ -585,3 +587,11 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 });
+
+export default function App() {
+  return (
+    <ThemeProvider>
+      <MainApp />
+    </ThemeProvider>
+  );
+}

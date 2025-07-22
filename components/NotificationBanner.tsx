@@ -1,8 +1,10 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { theme } from '../theme';
+import { useTheme } from '../theme';
 
 export default function NotificationBanner({ message }: { message: string | null }) {
+  const { theme } = useTheme();
+  const styles = React.useMemo(() => createStyles(theme), [theme]);
   if (!message) return null;
   return (
     <View style={styles.container} pointerEvents="none">
@@ -11,7 +13,7 @@ export default function NotificationBanner({ message }: { message: string | null
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (theme: any) => StyleSheet.create({
   container: {
     position: 'absolute',
     top: 40,
