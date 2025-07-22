@@ -18,9 +18,9 @@ const styles = StyleSheet.create({
     left: 20,
     right: 20,
     backgroundColor: theme.colors.primary,
-    borderRadius: 8,
-    paddingVertical: 8,
-    paddingHorizontal: 12,
+    borderRadius: 12,
+    paddingVertical: 10,
+    paddingHorizontal: 16,
     zIndex: 100,
   },
   text: {

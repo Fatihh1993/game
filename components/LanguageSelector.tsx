@@ -88,16 +88,16 @@ const styles = StyleSheet.create({
   },
   button: {
     backgroundColor: theme.colors.card,
-    paddingVertical: 14,
-    paddingHorizontal: 28,
-    borderRadius: 8,
+    paddingVertical: 16,
+    paddingHorizontal: 32,
+    borderRadius: 12,
     marginHorizontal: 10,
   },
   readyButton: {
     backgroundColor: theme.colors.primary,
-    paddingVertical: 14,
-    paddingHorizontal: 40,
-    borderRadius: 8,
+    paddingVertical: 16,
+    paddingHorizontal: 48,
+    borderRadius: 12,
     marginTop: 20,
   },
   buttonText: {
