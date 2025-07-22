@@ -14,8 +14,8 @@ export default function ProfileScreen({ onClose, visible, uiLanguage, onShowFrie
   const [progress, setProgress] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [country, setCountry] = useState<string | null>(null);
-  const [photo, setPhoto] = useState<string | null>(user?.photoURL ?? null);
   const user = auth.currentUser;
+  const [photo, setPhoto] = useState<string | null>(user?.photoURL ?? null);
 
   useEffect(() => {
     if (user?.displayName) {
