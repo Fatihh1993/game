@@ -152,12 +152,10 @@ export default function App() {
     setLoadingSnippets(true);
     setFetchError(null);
     try {
-      const username = user.displayName || user.email;
-      const progress = await fetchUserProgress(username);
-      const userLevel = progress?.[lang] || 1;
-      setLevel(userLevel);
+      // Level ile ilgili kodları kaldırıyoruz
+      setLevel(1);
       setCorrectInLevel(0);
-      const data = await fetchSnippets(lang, userLevel);
+      const data = await fetchSnippets(lang); // level parametresi yok!
       setSnippets(data);
     } catch (e) {
       setFetchError(t(uiLanguage, 'loadError'));
@@ -169,10 +167,10 @@ export default function App() {
 
   // Seviye değişince snippet'ları tekrar çek
   useEffect(() => {
-    if (selectedLanguage && level) {
+    if (selectedLanguage) {
       setLoadingSnippets(true);
       setFetchError(null);
-      fetchSnippets(selectedLanguage, level)
+      fetchSnippets(selectedLanguage) // level parametresi yok!
         .then(data => setSnippets(data))
         .catch(() => {
           setFetchError(t(uiLanguage, 'loadError'));
@@ -180,7 +178,7 @@ export default function App() {
         })
         .finally(() => setLoadingSnippets(false));
     }
-  }, [selectedLanguage, level]);
+  }, [selectedLanguage]);
 
   // Profilim butonu her ekranda aktif
   const ProfileButton = (
