@@ -45,45 +45,6 @@ export default function ProfileScreen({ onClose, visible, uiLanguage, onShowFrie
     });
   };
 
-  if (!user) {
-    return (
-      <Modal
-        visible={visible}
-        animationType="fade"
-        transparent
-        onRequestClose={onClose}
-      >
-        <View style={styles.overlay}>
-          <View style={styles.card}>
-            <Text style={styles.info}>{t(uiLanguage, 'loginRequired')}</Text>
-            <TouchableOpacity style={styles.closeButtonBox} onPress={onClose} activeOpacity={0.8}>
-          <Text style={styles.closeButtonText}>{t(uiLanguage, 'close')}</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
-    );
-  }
-
-  if (loading) {
-    return (
-      <Modal
-        visible={visible}
-        animationType="fade"
-        transparent
-        onRequestClose={onClose}
-      >
-        <View style={styles.overlay}>
-          <View style={styles.card}>
-            <ActivityIndicator color={theme.colors.accent} size="large" />
-          </View>
-        </View>
-      </Modal>
-    );
-  }
-
-  let countryObj = countries.find(c => c.code === country);
-
   const styles = React.useMemo(
     () =>
       StyleSheet.create({
@@ -192,6 +153,45 @@ export default function ProfileScreen({ onClose, visible, uiLanguage, onShowFrie
       }),
     [theme]
   );
+
+  if (!user) {
+    return (
+      <Modal
+        visible={visible}
+        animationType="fade"
+        transparent
+        onRequestClose={onClose}
+      >
+        <View style={styles.overlay}>
+          <View style={styles.card}>
+            <Text style={styles.info}>{t(uiLanguage, 'loginRequired')}</Text>
+            <TouchableOpacity style={styles.closeButtonBox} onPress={onClose} activeOpacity={0.8}>
+          <Text style={styles.closeButtonText}>{t(uiLanguage, 'close')}</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+    );
+  }
+
+  if (loading) {
+    return (
+      <Modal
+        visible={visible}
+        animationType="fade"
+        transparent
+        onRequestClose={onClose}
+      >
+        <View style={styles.overlay}>
+          <View style={styles.card}>
+            <ActivityIndicator color={theme.colors.accent} size="large" />
+          </View>
+        </View>
+      </Modal>
+    );
+  }
+
+  let countryObj = countries.find(c => c.code === country);
 
   return (
     <Modal
