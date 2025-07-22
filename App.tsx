@@ -26,6 +26,7 @@ import FriendsScreen from './components/FriendsScreen';
 import NotificationBanner from './components/NotificationBanner';
 import { Lang, t } from './translations';
 import { subscribeFriendRequests } from './systems/friends';
+import GameStats from './components/GameStats';
 
 export default function App() {
   const { theme } = useTheme();
@@ -431,47 +432,20 @@ export default function App() {
     );
   }
 
-  // Level kutusu UI
-  const LevelBox = (
-    <View style={styles.levelBox}>
-      <Text style={styles.levelBoxText}>
-        {t(uiLanguage, 'level')} {level}
-      </Text>
-    </View>
-  );
-
   // Yeni: Skor, Can, Rekor kutuları
-  const InfoBar = (
-    <View style={styles.infoBar}>
-      <View style={styles.infoItem}>
-        <Text style={styles.infoLabel}>{t(uiLanguage, 'score')}</Text>
-        <Text style={styles.infoValue}>{score}</Text>
-      </View>
-      <View style={styles.infoItem}>
-        <Text style={styles.infoLabel}>{t(uiLanguage, 'lives')}</Text>
-        <Text style={styles.infoValue}>{lives}</Text>
-      </View>
-      <View style={styles.infoItem}>
-        <Text style={styles.infoLabel}>{t(uiLanguage, 'best')}</Text>
-        <Text style={styles.infoValue}>{bestScore}</Text>
-      </View>
-      <View style={styles.infoItem}>
-        <Text style={styles.infoLabel}>{t(uiLanguage, 'streak')}</Text>
-        <Text style={styles.infoValue}>{streak}</Text>
-      </View>
-      <View style={styles.infoItem}>
-        <Text style={styles.infoLabel}>{t(uiLanguage, 'bestStreak')}</Text>
-        <Text style={styles.infoValue}>{bestStreak}</Text>
-      </View>
-      <View style={styles.infoItem}>
-        <Text style={styles.infoLabel}>{t(uiLanguage, 'xp')}</Text>
-        <Text style={styles.infoValue}>{xp}/100</Text>
-      </View>
-      <View style={styles.infoItem}>
-        <Text style={styles.infoLabel}>{t(uiLanguage, 'level')}</Text>
-        <Text style={styles.infoValue}>{level}</Text>
-      </View>
-    </View>
+  const StatsBar = (
+    <GameStats
+      score={score}
+      lives={lives}
+      bestScore={bestScore}
+      streak={streak}
+      bestStreak={bestStreak}
+      xp={xp}
+      level={level}
+      theme={theme}
+      t={t}
+      uiLanguage={uiLanguage}
+    />
   );
 
   const entities = {};
@@ -480,9 +454,8 @@ export default function App() {
     <View
       style={[styles.container, { backgroundColor: theme.colors.background }]}
     >
-      {LevelBox}
       {selectedLanguage && !gameOver && PauseButton}
-      {InfoBar}
+      {StatsBar}
       <NotificationBanner message={notification} />
       <GameEngine
         ref={gameEngineRef}
