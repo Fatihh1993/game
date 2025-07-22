@@ -17,7 +17,7 @@ import { Lang, t } from './translations';
 import { subscribeFriendRequests } from './systems/friends';
 
 export default function App() {
-  const { theme, setMode } = useTheme();
+  const { theme } = useTheme();
   const [themeSelected, setThemeSelected] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState<string | null>(null);
   const [uiLanguage, setUiLanguage] = useState<Lang>('tr');
@@ -206,7 +206,7 @@ export default function App() {
   );
 
   if (!themeSelected) {
-    return <ThemeSelector onSelect={(m) => { setMode(m); setThemeSelected(true); }} uiLanguage={uiLanguage} />;
+    return <ThemeSelector onSelect={() => { setThemeSelected(true); }} uiLanguage={uiLanguage} />;
   }
 
   if (!user) {
