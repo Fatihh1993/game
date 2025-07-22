@@ -97,8 +97,17 @@ export default function App() {
       setStreak(prev => prev + 1);
       setCorrectInLevel(prev => {
         const newCorrect = prev + 1;
-        if (newCorrect >= 5) {
-          setLevel(lvl => lvl + 1);
+        if (newCorrect >= 10) {
+          setLevel(lvl => {
+            const newLevel = lvl + 1;
+            if (user && selectedLanguage) {
+              const username = user.displayName || user.email;
+              if (username) {
+                saveUserProgress(username, selectedLanguage, newLevel);
+              }
+            }
+            return newLevel;
+          });
           return 0;
         }
         return newCorrect;
@@ -152,8 +161,15 @@ export default function App() {
     setLoadingSnippets(true);
     setFetchError(null);
     try {
-      // Level ile ilgili kodları kaldırıyoruz
-      setLevel(1);
+      let startingLevel = 1;
+      if (user) {
+        const username = user.displayName || user.email;
+        if (username) {
+          const progress = await fetchUserProgress(username);
+          startingLevel = progress?.[lang] || 1;
+        }
+      }
+      setLevel(startingLevel);
       setCorrectInLevel(0);
       const data = await fetchSnippets(lang); // level parametresi yok!
       setSnippets(data);
@@ -460,30 +476,31 @@ const createStyles = (theme: any) => StyleSheet.create({
   levelBox: {
     alignSelf: 'center',
     backgroundColor: theme.colors.card,
-    paddingVertical: 10,
-    paddingHorizontal: 40,
+    paddingVertical: 8,
+    paddingHorizontal: 32,
     borderRadius: 10,
-    marginTop: 18,
-    marginBottom: 8,
+    marginTop: 12,
+    marginBottom: 4,
     elevation: 2,
   },
   levelBoxText: {
     color: theme.colors.accent,
-    fontSize: 22,
+    fontSize: 20,
     fontWeight: 'bold',
     textAlign: 'center',
     letterSpacing: 1,
   },
   infoBar: {
+    position: 'absolute',
+    bottom: 20,
+    left: 18,
+    right: 18,
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
     backgroundColor: theme.colors.card,
     borderRadius: 12,
-    marginHorizontal: 18,
-    marginTop: 10,
-    marginBottom: 8,
-    paddingVertical: 10,
+    paddingVertical: 8,
     elevation: 3,
     shadowColor: '#000',
     shadowOpacity: 0.15,
@@ -496,7 +513,7 @@ const createStyles = (theme: any) => StyleSheet.create({
   },
   infoLabel: {
     color: theme.colors.accent,
-    fontSize: 15,
+    fontSize: 13,
     fontWeight: 'bold',
     marginBottom: 2,
     letterSpacing: 0.5,
@@ -506,7 +523,7 @@ const createStyles = (theme: any) => StyleSheet.create({
   },
   infoValue: {
     color: theme.colors.text,
-    fontSize: 22,
+    fontSize: 18,
     fontWeight: 'bold',
     textShadowColor: '#000',
     textShadowOffset: { width: 0, height: 1 },
