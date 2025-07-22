@@ -17,7 +17,7 @@ export default function AuthScreen({
   onLanguageChange: (lang: Lang) => void;
 
 }) {
-  const { theme } = useTheme();
+  const { theme, setMode, mode } = useTheme();
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -26,6 +26,10 @@ export default function AuthScreen({
   const [loading, setLoading] = useState(false);
   const [registerSuccess, setRegisterSuccess] = useState(false);
   const [country, setCountry] = useState('TR');
+
+  const toggleTheme = () => {
+    setMode(mode === 'dark' ? 'light' : 'dark');
+  };
 
 
   const handleSubmit = async () => {
@@ -78,6 +82,13 @@ export default function AuthScreen({
           backgroundColor: theme.colors.primary,
         },
         langButtonText: { color: theme.colors.text, fontWeight: 'bold' },
+        themeButton: {
+          backgroundColor: theme.colors.card,
+          paddingVertical: 8,
+          paddingHorizontal: 12,
+          borderRadius: 8,
+        },
+        themeButtonText: { color: theme.colors.text, fontWeight: 'bold', fontSize: 18 },
         authBox: {
           backgroundColor: theme.colors.card,
           borderRadius: 20,
@@ -158,6 +169,12 @@ export default function AuthScreen({
           onPress={() => onLanguageChange('en')}
         >
           <Text style={styles.langButtonText}>EN</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.themeButton}
+          onPress={toggleTheme}
+        >
+          <Text style={styles.themeButtonText}>{mode === 'dark' ? '🌙' : '🌞'}</Text>
         </TouchableOpacity>
       </View>
       <View style={styles.authBox}>

@@ -47,11 +47,13 @@ const darkTheme: Theme = {
 
 interface ThemeContextValue {
   theme: Theme;
+  mode: ThemeMode;
   setMode: (mode: ThemeMode) => void;
 }
 
 const ThemeContext = createContext<ThemeContextValue>({
   theme: lightTheme,
+  mode: 'light',
   setMode: () => {},
 });
 
@@ -76,7 +78,7 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
   const theme = mode === 'dark' ? darkTheme : lightTheme;
 
   return (
-    <ThemeContext.Provider value={{ theme, setMode: handleSetMode }}>
+    <ThemeContext.Provider value={{ theme, mode, setMode: handleSetMode }}>
       {children}
     </ThemeContext.Provider>
   );

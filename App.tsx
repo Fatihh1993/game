@@ -4,7 +4,6 @@ import { useTheme } from './theme';
 import { GameEngine } from 'react-native-game-engine';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LanguageSelector } from './components/LanguageSelector';
-import ThemeSelector from './components/ThemeSelector';
 import { hackSystem } from './systems/hack';
 import { fetchSnippets } from './systems/fetchSnippets';
 import AuthScreen from './components/AuthScreen';
@@ -18,7 +17,6 @@ import { subscribeFriendRequests } from './systems/friends';
 
 export default function App() {
   const { theme } = useTheme();
-  const [themeSelected, setThemeSelected] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState<string | null>(null);
   const [uiLanguage, setUiLanguage] = useState<Lang>('tr');
   const [score, setScore] = useState(0);
@@ -205,9 +203,6 @@ export default function App() {
     </View>
   );
 
-  if (!themeSelected) {
-    return <ThemeSelector onSelect={() => { setThemeSelected(true); }} uiLanguage={uiLanguage} />;
-  }
 
   if (!user) {
       return (
