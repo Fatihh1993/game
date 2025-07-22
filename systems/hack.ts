@@ -18,16 +18,19 @@ export const hackSystem = (
       if (!snippets || snippets.length === 0) return null;
       const item = snippets[Math.floor(Math.random() * snippets.length)];
       const newId = `snippet${Math.floor(Math.random() * 100000)}`;
+      const isGold = Math.random() < 0.2;
       const entity: any = {
         position: [Math.random() * maxLeft, 0],
         code: item.code,
         isCorrect: item.isCorrect,
+        isGold,
         explanation: item.explanations, // <-- explanations!
         renderer: require('../components/Snippet').Snippet,
         uiLanguage,
         showingExplanation: false,
       };
-      entity.onAnswer = (answer: boolean | null) => handleAnswer(answer, newId);
+      entity.onAnswer = (answer: boolean | null) =>
+        handleAnswer(answer, isGold, newId);
       entity.onToggleExplanation = (val: boolean) => {
         entity.showingExplanation = val;
       };
@@ -35,7 +38,7 @@ export const hackSystem = (
     };
 
     const snippetKeys = Object.keys(entities).filter(
-      key => entities[key]?.renderer && entities[key]?.code
+      key => entities[key]?.renderer && entities[key]?.code,
     );
 
     // Oyun başlarken ilk snippet'ı ekle
@@ -66,7 +69,7 @@ export const hackSystem = (
       if (entity.showingExplanation) continue; // açıklama açıkken dur
       entity.position[1] += 2;
       if (entity.position[1] > screenHeight - 100) {
-        handleAnswer(false, key);
+        handleAnswer(false, entity.isGold, key);
       }
     }
 
