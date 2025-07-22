@@ -16,6 +16,8 @@ import { Lang, t } from './translations';
 import { subscribeFriendRequests } from './systems/friends';
 
 function MainApp() {
+  const XP_PER_CORRECT = 20;
+  const XP_TO_LEVEL = 100;
   const [selectedLanguage, setSelectedLanguage] = useState<string | null>(null);
   const [uiLanguage, setUiLanguage] = useState<Lang>('tr');
   const [score, setScore] = useState(0);
@@ -24,7 +26,7 @@ function MainApp() {
   const [bestScore, setBestScore] = useState(0);
   const [gameOver, setGameOver] = useState(false);
   const [unlockedLevel, setUnlockedLevel] = useState(1);
-  const [correctInLevel, setCorrectInLevel] = useState(0);
+  const [xp, setXp] = useState(0);
   const [snippets, setSnippets] = useState<any[]>([]);
   const [loadingSnippets, setLoadingSnippets] = useState(false);
   const [fetchError, setFetchError] = useState<string | null>(null);
@@ -88,13 +90,13 @@ function MainApp() {
     const isRight = isCorrect === true;
     setScore(prev => prev + (isRight ? 1 : 0));
     if (isRight) {
-      setCorrectInLevel(prev => {
-        const newCorrect = prev + 1;
-        if (newCorrect >= 5) {
+      setXp(prev => {
+        const gained = prev + XP_PER_CORRECT;
+        if (gained >= XP_TO_LEVEL) {
           setLevel(lvl => lvl + 1);
-          return 0;
+          return gained - XP_TO_LEVEL;
         }
-        return newCorrect;
+        return gained;
       });
     }
     if (!isRight) {
@@ -122,7 +124,7 @@ function MainApp() {
     setScore(0);
     setLives(3);
     setUnlockedLevel(1);
-    setCorrectInLevel(0);
+    setXp(0);
     setGameOver(false);
     setSelectedLanguage(null);
     setLevel(1); // Seçim ekranında tekrar doğru seviyeye çekilecek
@@ -138,7 +140,7 @@ function MainApp() {
       const progress = await fetchUserProgress(username);
       const userLevel = progress?.[lang] || 1;
       setLevel(userLevel);
-      setCorrectInLevel(0);
+      setXp(0);
       const data = await fetchSnippets(lang, userLevel);
       setSnippets(data);
     } catch (e) {
@@ -268,6 +270,10 @@ function MainApp() {
   const LevelBox = (
     <View style={styles.levelBox}>
       <Text style={styles.levelBoxText}>{t(uiLanguage, 'level')} {level}</Text>
+      <View style={styles.xpBarBackground}>
+        <View style={[styles.xpBarFill, { width: `${(xp / XP_TO_LEVEL) * 100}%` }]} />
+      </View>
+      <Text style={styles.xpText}>{xp}/{XP_TO_LEVEL} {t(uiLanguage, 'xp')}</Text>
     </View>
   );
 
@@ -285,6 +291,10 @@ function MainApp() {
       <View style={styles.infoItem}>
         <Text style={styles.infoLabel}>{t(uiLanguage, 'best')}</Text>
         <Text style={styles.infoValue}>{bestScore}</Text>
+      </View>
+      <View style={styles.infoItem}>
+        <Text style={styles.infoLabel}>{t(uiLanguage, 'xp')}</Text>
+        <Text style={styles.infoValue}>{xp}</Text>
       </View>
       <View style={styles.infoItem}>
         <Text style={styles.infoLabel}>{t(uiLanguage, 'level')}</Text>
@@ -427,6 +437,24 @@ const createStyles = (theme: Theme) => StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
     letterSpacing: 1,
+  },
+  xpBarBackground: {
+    height: 8,
+    width: '100%',
+    backgroundColor: theme.colors.border,
+    borderRadius: 4,
+    marginTop: 6,
+    overflow: 'hidden',
+  },
+  xpBarFill: {
+    height: 8,
+    backgroundColor: theme.colors.success,
+  },
+  xpText: {
+    marginTop: 4,
+    color: theme.colors.text,
+    fontSize: 14,
+    textAlign: 'center',
   },
   infoBar: {
     flexDirection: 'row',
