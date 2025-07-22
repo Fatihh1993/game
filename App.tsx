@@ -1,9 +1,10 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { StyleSheet, View, Text, Button, ActivityIndicator, TouchableOpacity } from 'react-native';
-import { theme } from './theme';
+import { useTheme } from './theme';
 import { GameEngine } from 'react-native-game-engine';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LanguageSelector } from './components/LanguageSelector';
+import ThemeSelector from './components/ThemeSelector';
 import { hackSystem } from './systems/hack';
 import { fetchSnippets } from './systems/fetchSnippets';
 import AuthScreen from './components/AuthScreen';
@@ -16,6 +17,8 @@ import { Lang, t } from './translations';
 import { subscribeFriendRequests } from './systems/friends';
 
 export default function App() {
+  const { theme, setMode } = useTheme();
+  const [themeSelected, setThemeSelected] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState<string | null>(null);
   const [uiLanguage, setUiLanguage] = useState<Lang>('tr');
   const [score, setScore] = useState(0);
@@ -41,6 +44,7 @@ export default function App() {
   const [pendingRequests, setPendingRequests] = useState<any[]>([]);
   const [notification, setNotification] = useState<string | null>(null);
   const gameEngineRef = useRef<any>(null);
+  const styles = React.useMemo(() => createStyles(theme), [theme]);
 
   useEffect(() => {
     AsyncStorage.getItem('bestScore').then(value => {
@@ -200,6 +204,10 @@ export default function App() {
       </TouchableOpacity>
     </View>
   );
+
+  if (!themeSelected) {
+    return <ThemeSelector onSelect={(m) => { setMode(m); setThemeSelected(true); }} uiLanguage={uiLanguage} />;
+  }
 
   if (!user) {
       return (
@@ -417,7 +425,7 @@ export default function App() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (theme: any) => StyleSheet.create({
   container: { flex: 1, backgroundColor: theme.colors.background },
   gameContainer: { flex: 1 },
   overlay: {

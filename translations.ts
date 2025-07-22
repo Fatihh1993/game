@@ -61,6 +61,9 @@ export const translations: Record<Lang, Record<string, string>> = {
     paused: 'Duraklatıldı',
     streak: 'Seri',
     bestStreak: 'En İyi Seri',
+    selectTheme: 'Tema Seç',
+    light: 'Açık',
+    dark: 'Karanlık',
   },
   en: {
     loginTitle: 'Login',
@@ -122,6 +125,9 @@ export const translations: Record<Lang, Record<string, string>> = {
     paused: 'Paused',
     streak: 'Streak',
     bestStreak: 'Best Streak',
+    selectTheme: 'Select Theme',
+    light: 'Light',
+    dark: 'Dark',
   },
 };
 

@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, View, Text, StyleSheet, TextInput, TouchableOpacity, ActivityIndicator, ScrollView } from 'react-native';
-import { theme } from '../theme';
+import { useTheme } from '../theme';
 import { Lang, t } from '../translations';
 import { auth } from '../systems/auth';
 import { searchUsers, sendFriendRequest, fetchFriendRequests, fetchSentFriendRequests, acceptFriendRequest, fetchFriendsWithProgress } from '../systems/friends';
 import UserProfileScreen from './UserProfileScreen';
 
 export default function FriendsScreen({ visible, onClose, uiLanguage }: { visible: boolean; onClose: () => void; uiLanguage: Lang }) {
+  const { theme } = useTheme();
   const user = auth.currentUser;
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<any[]>([]);
@@ -57,10 +58,98 @@ export default function FriendsScreen({ visible, onClose, uiLanguage }: { visibl
     });
   };
 
+  const styles = React.useMemo(
+    () =>
+      StyleSheet.create({
+        overlay: {
+          flex: 1,
+          backgroundColor: theme.colors.overlay,
+          justifyContent: 'center',
+          alignItems: 'center',
+        },
+        card: {
+          width: 320,
+          backgroundColor: theme.colors.card,
+          borderRadius: 20,
+          padding: 24,
+          alignItems: 'center',
+        },
+        title: {
+          color: theme.colors.accent,
+          fontSize: 22,
+          fontWeight: 'bold',
+          marginBottom: 8,
+        },
+        searchRow: { flexDirection: 'row', marginBottom: 8 },
+        input: {
+          backgroundColor: theme.colors.card,
+          color: theme.colors.text,
+          borderRadius: 12,
+          borderWidth: 1,
+          borderColor: theme.colors.border,
+          paddingHorizontal: 10,
+          paddingVertical: 8,
+          flex: 1,
+          marginRight: 6,
+        },
+        searchButton: {
+          backgroundColor: theme.colors.primary,
+          borderRadius: 12,
+          paddingHorizontal: 12,
+          justifyContent: 'center',
+        },
+        addButton: {
+          backgroundColor: theme.colors.primary,
+          borderRadius: 12,
+          paddingHorizontal: 12,
+          paddingVertical: 6,
+        },
+        profileButton: {
+          backgroundColor: theme.colors.primary,
+          borderRadius: 12,
+          paddingHorizontal: 12,
+          paddingVertical: 6,
+          marginLeft: 6,
+        },
+        buttonText: { color: theme.colors.text, fontWeight: 'bold' },
+        row: {
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          paddingVertical: 4,
+          width: '100%',
+        },
+        name: { color: theme.colors.text, fontSize: 15, flex: 1 },
+        levelText: {
+          color: theme.colors.accent,
+          fontSize: 12,
+          flex: 1,
+          textAlign: 'right',
+        },
+        section: {
+          alignSelf: 'flex-start',
+          marginTop: 10,
+          marginBottom: 4,
+          color: theme.colors.accent,
+          fontWeight: 'bold',
+        },
+        closeButton: {
+          marginTop: 12,
+          backgroundColor: theme.colors.primary,
+          borderRadius: 12,
+          paddingVertical: 10,
+          paddingHorizontal: 24,
+        },
+        info: { color: theme.colors.success, marginBottom: 6, fontWeight: 'bold' },
+        sentText: { color: theme.colors.accent, fontWeight: 'bold' },
+      }),
+    [theme]
+  );
+
   return (
     <>
-    <Modal visible={visible} animationType="fade" transparent onRequestClose={onClose}>
-      <View style={styles.overlay}>
+      <Modal visible={visible} animationType="fade" transparent onRequestClose={onClose}>
+        <View style={styles.overlay}>
         <View style={styles.card}>
           <Text style={styles.title}>{t(uiLanguage, 'friends')}</Text>
           {info && <Text style={styles.info}>{info}</Text>}
@@ -145,103 +234,3 @@ export default function FriendsScreen({ visible, onClose, uiLanguage }: { visibl
   );
 }
 
-const styles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-    backgroundColor: theme.colors.overlay,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  card: {
-    width: 320,
-    backgroundColor: theme.colors.card,
-    borderRadius: 20,
-    padding: 24,
-    alignItems: 'center',
-  },
-  title: {
-    color: theme.colors.accent,
-    fontSize: 22,
-    fontWeight: 'bold',
-    marginBottom: 8,
-  },
-  searchRow: {
-    flexDirection: 'row',
-    marginBottom: 8,
-  },
-  input: {
-    backgroundColor: theme.colors.card,
-    color: theme.colors.text,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: theme.colors.border,
-    paddingHorizontal: 10,
-    paddingVertical: 8,
-    flex: 1,
-    marginRight: 6,
-  },
-  searchButton: {
-    backgroundColor: theme.colors.primary,
-    borderRadius: 12,
-    paddingHorizontal: 12,
-    justifyContent: 'center',
-  },
-  addButton: {
-    backgroundColor: theme.colors.primary,
-    borderRadius: 12,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-  },
-  profileButton: {
-    backgroundColor: theme.colors.primary,
-    borderRadius: 12,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    marginLeft: 6,
-  },
-  buttonText: {
-    color: theme.colors.text,
-    fontWeight: 'bold',
-  },
-  row: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 4,
-    width: '100%',
-  },
-  name: {
-    color: theme.colors.text,
-    fontSize: 15,
-    flex: 1,
-  },
-  levelText: {
-    color: theme.colors.accent,
-    fontSize: 12,
-    flex: 1,
-    textAlign: 'right',
-  },
-  section: {
-    alignSelf: 'flex-start',
-    marginTop: 10,
-    marginBottom: 4,
-    color: theme.colors.accent,
-    fontWeight: 'bold',
-  },
-  closeButton: {
-    marginTop: 12,
-    backgroundColor: theme.colors.primary,
-    borderRadius: 12,
-    paddingVertical: 10,
-    paddingHorizontal: 24,
-  },
-  info: {
-    color: theme.colors.success,
-    marginBottom: 6,
-    fontWeight: 'bold',
-  },
-  sentText: {
-    color: theme.colors.accent,
-    fontWeight: 'bold',
-  },
-});
