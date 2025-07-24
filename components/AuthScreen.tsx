@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
-import { useTheme } from '../theme';
+import { useTheme, ThemeMode } from '../theme';
 import { Picker } from '@react-native-picker/picker';
 import { registerWithUsername, loginWithUsername } from '../systems/auth';
 import { updateProfile } from 'firebase/auth';
@@ -28,7 +28,9 @@ export default function AuthScreen({
   const [country, setCountry] = useState('TR');
 
   const toggleTheme = () => {
-    setMode(mode === 'dark' ? 'light' : 'dark');
+    const modes: ThemeMode[] = ['light', 'dark', 'retro'];
+    const next = (modes.indexOf(mode) + 1) % modes.length;
+    setMode(modes[next]);
   };
 
 
@@ -81,14 +83,23 @@ export default function AuthScreen({
         langButtonActive: {
           backgroundColor: theme.colors.primary,
         },
-        langButtonText: { color: theme.colors.text, fontWeight: 'bold' },
+        langButtonText: {
+          color: theme.colors.text,
+          fontWeight: 'bold',
+          fontFamily: theme.fontFamily,
+        },
         themeButton: {
           backgroundColor: theme.colors.card,
           paddingVertical: 8,
           paddingHorizontal: 12,
           borderRadius: 8,
         },
-        themeButtonText: { color: theme.colors.text, fontWeight: 'bold', fontSize: 18 },
+        themeButtonText: {
+          color: theme.colors.text,
+          fontWeight: 'bold',
+          fontSize: 18,
+          fontFamily: theme.fontFamily,
+        },
         authBox: {
           backgroundColor: theme.colors.card,
           borderRadius: 20,
@@ -106,6 +117,7 @@ export default function AuthScreen({
           fontWeight: 'bold',
           marginBottom: 18,
           letterSpacing: 1,
+          fontFamily: theme.fontFamily,
         },
         input: {
           backgroundColor: theme.colors.card,
@@ -121,9 +133,19 @@ export default function AuthScreen({
           shadowOpacity: 0.05,
           shadowRadius: 2,
           elevation: 1,
+          fontFamily: theme.fontFamily,
         },
-        error: { color: theme.colors.error, marginBottom: 10 },
-        success: { color: theme.colors.success, marginBottom: 10, fontWeight: 'bold' },
+        error: {
+          color: theme.colors.error,
+          marginBottom: 10,
+          fontFamily: theme.fontFamily,
+        },
+        success: {
+          color: theme.colors.success,
+          marginBottom: 10,
+          fontWeight: 'bold',
+          fontFamily: theme.fontFamily,
+        },
         buttonRow: {
           flexDirection: 'row',
           marginTop: 8,
@@ -148,6 +170,7 @@ export default function AuthScreen({
           letterSpacing: 0.5,
           paddingHorizontal: 8,
           paddingVertical: 2,
+          fontFamily: theme.fontFamily,
         },
         pickerBox: { width: 240, marginBottom: 14, backgroundColor: theme.colors.card, borderRadius: 8 },
         picker: { color: theme.colors.text, width: 240, height: 44 },
@@ -174,7 +197,9 @@ export default function AuthScreen({
           style={styles.themeButton}
           onPress={toggleTheme}
         >
-          <Text style={styles.themeButtonText}>{mode === 'dark' ? '🌙' : '🌞'}</Text>
+          <Text style={styles.themeButtonText}>
+            {mode === 'light' ? '🌞' : mode === 'dark' ? '🌙' : '🎮'}
+          </Text>
         </TouchableOpacity>
       </View>
       <View style={styles.authBox}>

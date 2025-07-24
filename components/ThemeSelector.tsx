@@ -26,6 +26,7 @@ export default function ThemeSelector({
           marginBottom: 30,
           fontWeight: 'bold',
           textAlign: 'center',
+          fontFamily: theme.fontFamily,
         },
         row: { flexDirection: 'row', gap: 20 },
         button: {
@@ -38,6 +39,7 @@ export default function ThemeSelector({
           color: theme.colors.text,
           fontSize: 18,
           fontWeight: 'bold',
+          fontFamily: theme.fontFamily,
         },
       }),
     [theme]
@@ -51,6 +53,9 @@ export default function ThemeSelector({
         </TouchableOpacity>
         <TouchableOpacity style={styles.button} onPress={() => onSelect('dark')}>
           <Text style={styles.buttonText}>{t(uiLanguage, 'dark')}</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.button} onPress={() => onSelect('retro')}>
+          <Text style={styles.buttonText}>{t(uiLanguage, 'retro')}</Text>
         </TouchableOpacity>
       </View>
     </View>

@@ -30,6 +30,39 @@ export default function GameStats(props: Props) {
   const { score, lives, bestScore, streak, bestStreak, xp, level, theme, t, uiLanguage } = props;
   const values: any = { score, lives, best: bestScore, streak, bestStreak, xp: `${xp}/100`, level };
 
+  const styles = React.useMemo(
+    () =>
+      StyleSheet.create({
+        container: {
+          flexDirection: 'row',
+          flexWrap: 'wrap',
+          justifyContent: 'center',
+          borderRadius: 16,
+          padding: 8,
+          margin: 8,
+          elevation: 3,
+        },
+        statCard: {
+          alignItems: 'center',
+          margin: 8,
+          minWidth: 60,
+        },
+        statValue: {
+          fontSize: 20,
+          fontWeight: 'bold',
+          marginTop: 2,
+          fontFamily: theme.fontFamily,
+        },
+        statLabel: {
+          fontSize: 12,
+          marginTop: 1,
+          fontWeight: '600',
+          fontFamily: theme.fontFamily,
+        },
+      }),
+    [theme]
+  );
+
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.card }]}>
       {stats.map(stat => (
@@ -46,30 +79,3 @@ export default function GameStats(props: Props) {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'center',
-    borderRadius: 16,
-    padding: 8,
-    margin: 8,
-    elevation: 3,
-  },
-  statCard: {
-    alignItems: 'center',
-    margin: 8,
-    minWidth: 60,
-  },
-  statValue: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginTop: 2,
-  },
-  statLabel: {
-    fontSize: 12,
-    marginTop: 1,
-    fontWeight: '600',
-  },
-});

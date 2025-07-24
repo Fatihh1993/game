@@ -71,10 +71,21 @@ export default function ProfileScreen({ onClose, visible, uiLanguage, onShowFrie
           color: theme.colors.accent,
           marginBottom: 8,
           letterSpacing: 0.5,
+          fontFamily: theme.fontFamily,
         },
         userBox: { alignItems: 'center', marginBottom: 4 },
-        username: { fontSize: 17, fontWeight: '600', color: theme.colors.text },
-        email: { fontSize: 13, color: '#bbb', marginTop: 1 },
+        username: {
+          fontSize: 17,
+          fontWeight: '600',
+          color: theme.colors.text,
+          fontFamily: theme.fontFamily,
+        },
+        email: {
+          fontSize: 13,
+          color: '#bbb',
+          marginTop: 1,
+          fontFamily: theme.fontFamily,
+        },
         countryBox: {
           flexDirection: 'row',
           alignItems: 'center',
@@ -84,8 +95,12 @@ export default function ProfileScreen({ onClose, visible, uiLanguage, onShowFrie
           paddingVertical: 4,
           marginVertical: 6,
         },
-        flag: { fontSize: 18, marginRight: 6 },
-        country: { fontSize: 14, color: theme.colors.text },
+        flag: { fontSize: 18, marginRight: 6, fontFamily: theme.fontFamily },
+        country: {
+          fontSize: 14,
+          color: theme.colors.text,
+          fontFamily: theme.fontFamily,
+        },
         section: {
           fontSize: 15,
           color: theme.colors.accent,
@@ -93,6 +108,7 @@ export default function ProfileScreen({ onClose, visible, uiLanguage, onShowFrie
           marginTop: 14,
           marginBottom: 4,
           alignSelf: 'flex-start',
+          fontFamily: theme.fontFamily,
         },
         progressBox: { width: '100%', marginTop: 2 },
         langCard: {
@@ -104,8 +120,17 @@ export default function ProfileScreen({ onClose, visible, uiLanguage, onShowFrie
           justifyContent: 'space-between',
           alignItems: 'center',
         },
-        langName: { color: theme.colors.text, fontWeight: 'bold', fontSize: 13 },
-        levels: { color: theme.colors.accent, fontSize: 12 },
+        langName: {
+          color: theme.colors.text,
+          fontWeight: 'bold',
+          fontSize: 13,
+          fontFamily: theme.fontFamily,
+        },
+        levels: {
+          color: theme.colors.accent,
+          fontSize: 12,
+          fontFamily: theme.fontFamily,
+        },
         avatar: { width: 80, height: 80, borderRadius: 40, marginBottom: 8 },
         photoButton: {
           backgroundColor: theme.colors.primary,
@@ -114,7 +139,11 @@ export default function ProfileScreen({ onClose, visible, uiLanguage, onShowFrie
           paddingVertical: 6,
           marginBottom: 8,
         },
-        photoButtonText: { color: theme.colors.text, fontWeight: 'bold' },
+        photoButtonText: {
+          color: theme.colors.text,
+          fontWeight: 'bold',
+          fontFamily: theme.fontFamily,
+        },
         badgesBox: { flexDirection: 'row', flexWrap: 'wrap', marginBottom: 8 },
         badge: {
           backgroundColor: theme.colors.primary,
@@ -125,6 +154,7 @@ export default function ProfileScreen({ onClose, visible, uiLanguage, onShowFrie
           marginRight: 4,
           marginBottom: 4,
           fontSize: 12,
+          fontFamily: theme.fontFamily,
         },
         friendButtonBox: {
           marginTop: 12,
@@ -148,8 +178,15 @@ export default function ProfileScreen({ onClose, visible, uiLanguage, onShowFrie
           paddingHorizontal: 0,
           textAlign: 'center',
           width: '100%',
+          fontFamily: theme.fontFamily,
         },
-        info: { color: '#bbb', fontSize: 15, textAlign: 'center', marginVertical: 8 },
+        info: {
+          color: '#bbb',
+          fontSize: 15,
+          textAlign: 'center',
+          marginVertical: 8,
+          fontFamily: theme.fontFamily,
+        },
       }),
     [theme]
   );

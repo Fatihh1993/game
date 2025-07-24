@@ -178,6 +178,7 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-end',
     marginBottom: 6,
     marginRight: 2,
+    fontFamily: 'Courier New',
   },
   buttonRow: {
     flexDirection: 'row',
@@ -200,6 +201,7 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 18,
     fontWeight: 'bold',
+    fontFamily: 'Courier New',
   },
   goldContainer: {
     borderColor: '#ffd700',
@@ -210,6 +212,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     alignSelf: 'center',
     marginBottom: 4,
+    fontFamily: 'Courier New',
   },
   explanationBox: {
     marginTop: 10,
@@ -222,10 +225,12 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 4,
     fontSize: 16,
+    fontFamily: 'Courier New',
   },
   explanationText: {
     color: '#fff',
     fontSize: 15,
+    fontFamily: 'Courier New',
   },
   continueButton: {
     marginTop: 12,
@@ -239,5 +244,6 @@ const styles = StyleSheet.create({
     color: 'white',
     fontWeight: 'bold',
     fontSize: 16,
+    fontFamily: 'Courier New',
   },
 });
