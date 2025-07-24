@@ -1,11 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   TouchableOpacity,
   Dimensions,
+  Animated,
 } from 'react-native';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Lang, t } from '../translations';
 
 export const Snippet = ({
@@ -33,6 +35,7 @@ export const Snippet = ({
   const [selectedAnswer, setSelectedAnswer] = useState<null | boolean>(null);
   const [timeLeft, setTimeLeft] = useState(timeLimit);
   const [timerActive, setTimerActive] = useState(true);
+  const feedbackAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     if (!timerActive || showExplanation) return;
@@ -56,8 +59,20 @@ export const Snippet = ({
 
   const handlePress = (answer: boolean) => {
     setSelectedAnswer(answer);
-    setShowExplanation(true);
     setTimerActive(false);
+    Animated.sequence([
+      Animated.timing(feedbackAnim, {
+        toValue: 1,
+        duration: 200,
+        useNativeDriver: true,
+      }),
+      Animated.timing(feedbackAnim, {
+        toValue: 0,
+        delay: 400,
+        duration: 200,
+        useNativeDriver: true,
+      }),
+    ]).start(() => setShowExplanation(true));
   };
 
   const handleContinue = () => {
@@ -103,6 +118,17 @@ export const Snippet = ({
       <Text style={styles.timerText}>
         {timeLeft} {t(uiLanguage, 'secondsAbbrev')}
       </Text>
+      {!showExplanation && selectedAnswer !== null && (
+        <Animated.View
+          style={[styles.feedbackOverlay, { opacity: feedbackAnim }]}
+        >
+          <Icon
+            name={selectedAnswer === isCorrect ? 'check-circle' : 'close-circle'}
+            size={60}
+            color={selectedAnswer === isCorrect ? '#2ecc40' : '#ff4136'}
+          />
+        </Animated.View>
+      )}
       <View style={styles.buttonRow}>
         <TouchableOpacity
           style={[styles.buttonWrapper, styles.correctButton]}
@@ -122,7 +148,7 @@ export const Snippet = ({
       {showExplanation && (
         <View style={styles.explanationBox}>
           <Text style={styles.explanationTitle}>
-            {isCorrect ? 'Why Correct?' : 'Why Wrong?'}
+            {t(uiLanguage, isCorrect ? 'whyCorrect' : 'whyWrong')}
           </Text>
           <Text style={styles.explanationText}>
             {typeof explanation === 'object'
@@ -239,5 +265,11 @@ const styles = StyleSheet.create({
     color: 'white',
     fontWeight: 'bold',
     fontSize: 16,
+  },
+  feedbackOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.6)',
   },
 });
