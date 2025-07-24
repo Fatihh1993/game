@@ -66,6 +66,7 @@ export const translations: Record<Lang, Record<string, string>> = {
     selectTheme: 'Tema Seç',
     light: 'Açık',
     dark: 'Karanlık',
+    retro: 'Retro',
   },
   en: {
     loginTitle: 'Login',
@@ -132,6 +133,7 @@ export const translations: Record<Lang, Record<string, string>> = {
     selectTheme: 'Select Theme',
     light: 'Light',
     dark: 'Dark',
+    retro: 'Retro',
   },
 };
 

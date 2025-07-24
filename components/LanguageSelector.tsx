@@ -42,6 +42,7 @@ export const LanguageSelector = ({
           marginBottom: 30,
           fontWeight: 'bold',
           textAlign: 'center',
+          fontFamily: theme.fontFamily,
         },
         buttonGrid: {
           gap: 20,
@@ -71,6 +72,7 @@ export const LanguageSelector = ({
           color: theme.colors.text,
           fontSize: 18,
           fontWeight: 'bold',
+          fontFamily: theme.fontFamily,
         },
         levelLocked: {
           opacity: 0.5,

@@ -668,6 +668,7 @@ const createStyles = (theme: any) =>
       textShadowColor: '#000',
       textShadowOffset: { width: 0, height: 2 },
       textShadowRadius: 6,
+      fontFamily: theme.fontFamily,
     },
     finalScore: {
       fontSize: 22,
@@ -678,6 +679,7 @@ const createStyles = (theme: any) =>
       textShadowColor: '#000',
       textShadowOffset: { width: 0, height: 1 },
       textShadowRadius: 2,
+      fontFamily: theme.fontFamily,
     },
     levelBox: {
       alignSelf: 'center',
@@ -695,6 +697,7 @@ const createStyles = (theme: any) =>
       fontWeight: 'bold',
       textAlign: 'center',
       letterSpacing: 1,
+      fontFamily: theme.fontFamily,
     },
     infoBar: {
       flexDirection: 'row',
@@ -725,6 +728,7 @@ const createStyles = (theme: any) =>
       textShadowColor: '#000',
       textShadowOffset: { width: 0, height: 1 },
       textShadowRadius: 2,
+      fontFamily: theme.fontFamily,
     },
     infoValue: {
       color: theme.colors.text,
@@ -733,6 +737,7 @@ const createStyles = (theme: any) =>
       textShadowColor: '#000',
       textShadowOffset: { width: 0, height: 1 },
       textShadowRadius: 2,
+      fontFamily: theme.fontFamily,
     },
     levelSelectContainer: {
       flex: 1,
@@ -745,6 +750,7 @@ const createStyles = (theme: any) =>
       fontSize: 26,
       fontWeight: 'bold',
       marginBottom: 30,
+      fontFamily: theme.fontFamily,
     },
     levelItem: {
       width: 220,
@@ -779,6 +785,7 @@ const createStyles = (theme: any) =>
       fontWeight: 'bold',
       marginBottom: 18,
       letterSpacing: 1,
+      fontFamily: theme.fontFamily,
     },
     leaderboardHeader: {
       color: theme.colors.accent,
@@ -786,6 +793,7 @@ const createStyles = (theme: any) =>
       fontSize: 16,
       marginBottom: 2,
       textAlign: 'left',
+      fontFamily: theme.fontFamily,
     },
     leaderboardRow: {
       flexDirection: 'row',
@@ -803,6 +811,7 @@ const createStyles = (theme: any) =>
       width: 28,
       textAlign: 'right',
       fontWeight: 'bold',
+      fontFamily: theme.fontFamily,
     },
     leaderboardName: {
       color: theme.colors.text,
@@ -810,6 +819,7 @@ const createStyles = (theme: any) =>
       flex: 1,
       marginLeft: 10,
       fontWeight: 'bold',
+      fontFamily: theme.fontFamily,
     },
     leaderboardScore: {
       color: theme.colors.accent,
@@ -817,6 +827,7 @@ const createStyles = (theme: any) =>
       fontWeight: 'bold',
       width: 40,
       textAlign: 'right',
+      fontFamily: theme.fontFamily,
     },
     leaderboardButton: {
       backgroundColor: theme.colors.primary,
@@ -853,5 +864,6 @@ const createStyles = (theme: any) =>
       fontSize: 16,
       letterSpacing: 0.5,
       textAlign: 'center',
+      fontFamily: theme.fontFamily,
     },
   });
