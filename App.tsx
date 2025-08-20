@@ -27,6 +27,7 @@ import NotificationBanner from './components/NotificationBanner';
 import { Lang, t } from './translations';
 import { subscribeFriendRequests } from './systems/friends';
 import GameStats from './components/GameStats';
+import GameHeader from './components/GameHeader';
 
 export default function App() {
   const { theme } = useTheme();
@@ -252,6 +253,7 @@ export default function App() {
     return (
       <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
         {ProfileButton}
+        <GameHeader />
         {/* Sadece dil seçtir, level yok */}
         <LanguageSelector
           onSelect={handleLanguageSelect}
@@ -356,6 +358,7 @@ export default function App() {
         }}
       >
         {ProfileButton}
+        <GameHeader />
         <ActivityIndicator size="large" color={theme.colors.accent} />
         <Text style={{ color: 'white', marginTop: 20 }}>
           {t(uiLanguage, 'loadingQuestions')}
@@ -399,6 +402,7 @@ export default function App() {
         }}
       >
         {ProfileButton}
+        <GameHeader />
         <Text style={{ color: 'red', marginBottom: 20 }}>{fetchError}</Text>
         <Button
           title={t(uiLanguage, 'tryAgain')}
@@ -454,6 +458,7 @@ export default function App() {
     <View
       style={[styles.container, { backgroundColor: theme.colors.background }]}
     >
+      <GameHeader />
       {selectedLanguage && !gameOver && PauseButton}
       {StatsBar}
       <NotificationBanner message={notification} />
