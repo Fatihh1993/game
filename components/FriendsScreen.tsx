@@ -79,6 +79,7 @@ export default function FriendsScreen({ visible, onClose, uiLanguage }: { visibl
           fontSize: 22,
           fontWeight: 'bold',
           marginBottom: 8,
+          fontFamily: theme.fontFamily,
         },
         searchRow: { flexDirection: 'row', marginBottom: 8 },
         input: {
@@ -91,6 +92,7 @@ export default function FriendsScreen({ visible, onClose, uiLanguage }: { visibl
           paddingVertical: 8,
           flex: 1,
           marginRight: 6,
+          fontFamily: theme.fontFamily,
         },
         searchButton: {
           backgroundColor: theme.colors.primary,
@@ -111,7 +113,11 @@ export default function FriendsScreen({ visible, onClose, uiLanguage }: { visibl
           paddingVertical: 6,
           marginLeft: 6,
         },
-        buttonText: { color: theme.colors.text, fontWeight: 'bold' },
+        buttonText: {
+          color: theme.colors.text,
+          fontWeight: 'bold',
+          fontFamily: theme.fontFamily,
+        },
         row: {
           flexDirection: 'row',
           justifyContent: 'space-between',
@@ -119,12 +125,18 @@ export default function FriendsScreen({ visible, onClose, uiLanguage }: { visibl
           paddingVertical: 4,
           width: '100%',
         },
-        name: { color: theme.colors.text, fontSize: 15, flex: 1 },
+        name: {
+          color: theme.colors.text,
+          fontSize: 15,
+          flex: 1,
+          fontFamily: theme.fontFamily,
+        },
         levelText: {
           color: theme.colors.accent,
           fontSize: 12,
           flex: 1,
           textAlign: 'right',
+          fontFamily: theme.fontFamily,
         },
         section: {
           alignSelf: 'flex-start',
@@ -132,6 +144,7 @@ export default function FriendsScreen({ visible, onClose, uiLanguage }: { visibl
           marginBottom: 4,
           color: theme.colors.accent,
           fontWeight: 'bold',
+          fontFamily: theme.fontFamily,
         },
         closeButton: {
           marginTop: 12,
@@ -140,8 +153,17 @@ export default function FriendsScreen({ visible, onClose, uiLanguage }: { visibl
           paddingVertical: 10,
           paddingHorizontal: 24,
         },
-        info: { color: theme.colors.success, marginBottom: 6, fontWeight: 'bold' },
-        sentText: { color: theme.colors.accent, fontWeight: 'bold' },
+        info: {
+          color: theme.colors.success,
+          marginBottom: 6,
+          fontWeight: 'bold',
+          fontFamily: theme.fontFamily,
+        },
+        sentText: {
+          color: theme.colors.accent,
+          fontWeight: 'bold',
+          fontFamily: theme.fontFamily,
+        },
       }),
     [theme]
   );

@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export type ThemeMode = 'light' | 'dark';
+export type ThemeMode = 'light' | 'dark' | 'retro';
 
 export interface Theme {
   colors: {
@@ -15,6 +15,7 @@ export interface Theme {
     border: string;
     overlay: string;
   };
+  fontFamily: string;
 }
 
 const lightTheme: Theme = {
@@ -29,6 +30,7 @@ const lightTheme: Theme = {
     border: '#e0e0e0',
     overlay: 'rgba(0,0,0,0.5)',
   },
+  fontFamily: 'System',
 };
 
 const darkTheme: Theme = {
@@ -43,6 +45,22 @@ const darkTheme: Theme = {
     border: '#272727',
     overlay: 'rgba(0,0,0,0.7)',
   },
+  fontFamily: 'System',
+};
+
+const retroTheme: Theme = {
+  colors: {
+    background: '#0d1b2a',
+    card: '#1b263b',
+    primary: '#e0e1dd',
+    text: '#e0e1dd',
+    accent: '#ffb703',
+    error: '#ef233c',
+    success: '#06d6a0',
+    border: '#415a77',
+    overlay: 'rgba(0,0,0,0.7)',
+  },
+  fontFamily: 'Courier New',
 };
 
 interface ThemeContextValue {
@@ -64,8 +82,8 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     AsyncStorage.getItem('themeMode').then(value => {
-      if (value === 'dark' || value === 'light') {
-        setMode(value);
+      if (value === 'dark' || value === 'light' || value === 'retro') {
+        setMode(value as ThemeMode);
       }
     });
   }, []);
@@ -75,7 +93,8 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
     AsyncStorage.setItem('themeMode', m);
   };
 
-  const theme = mode === 'dark' ? darkTheme : lightTheme;
+  const theme =
+    mode === 'dark' ? darkTheme : mode === 'retro' ? retroTheme : lightTheme;
 
   return (
     <ThemeContext.Provider value={{ theme, mode, setMode: handleSetMode }}>

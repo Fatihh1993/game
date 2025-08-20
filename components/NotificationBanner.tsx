@@ -23,6 +23,7 @@ export default function NotificationBanner({ message }: { message: string | null
           color: theme.colors.text,
           fontWeight: 'bold',
           textAlign: 'center',
+          fontFamily: theme.fontFamily,
         },
       }),
     [theme]
