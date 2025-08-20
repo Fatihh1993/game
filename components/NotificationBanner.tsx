@@ -4,13 +4,12 @@ import { useTheme } from '../theme';
 
 export default function NotificationBanner({ message }: { message: string | null }) {
   const { theme } = useTheme();
-  if (!message) return null;
   const styles = React.useMemo(
     () =>
       StyleSheet.create({
         container: {
           position: 'absolute',
-          top: 40,
+          top: 60,
           left: 20,
           right: 20,
           backgroundColor: theme.colors.primary,
@@ -28,6 +27,7 @@ export default function NotificationBanner({ message }: { message: string | null
       }),
     [theme]
   );
+  if (!message) return null;
   return (
     <View style={styles.container} pointerEvents="none">
       <Text style={styles.text}>{message}</Text>

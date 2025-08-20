@@ -646,7 +646,11 @@ export default function App() {
 
 const createStyles = (theme: any) =>
   StyleSheet.create({
-    container: { flex: 1, backgroundColor: theme.colors.background },
+    container: {
+      flex: 1,
+      backgroundColor: theme.colors.background,
+      paddingTop: 60,
+    },
     gameContainer: { flex: 1 },
     overlay: {
       position: 'absolute',
